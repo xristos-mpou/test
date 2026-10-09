@@ -1,0 +1,8 @@
+{
+  "appId": "gr.idiaitera.app",
+  "appName": "Ιδιαίτερα",
+  "webDir": "docs",
+  "android": {
+    "backgroundColor": "#F5F3EE"
+  }
+}

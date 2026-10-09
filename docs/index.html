@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1D2650">
+<meta name="description" content="Πρόγραμμα, μαθητές, πληρωμές και ενημέρωση γονέων για καθηγητές ιδιαίτερων.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Ιδιαίτερα</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap">
+<style>
+/* Layout: one-column phone app, fixed tab bar, full-screen sheets. Look: a tutor's notebook — warm paper, ink-navy panels on graph paper, serif headings */
+:root{
+  --bg:#F5F3EE; --surface:#FFFFFF; --line:#E4E0D6; --ink:#191C27; --muted:#5A5F6E;
+  --accent:#2445C8; --accent-soft:#E8EDFC; --on-accent:#FFFFFF;
+  --owe:#9A3A0C; --owe-soft:#FCEFE5; --ok:#0E6656; --ok-soft:#E1F1EC;
+  --hero:#1D2650;
+  --display:'Literata', Georgia, 'Times New Roman', serif;
+  --tabbar:#1D2650; --tab-ink:#B9C0DA; --tab-on:#FFFFFF; --tab-on-ink:#1D2650; --on-hero:#FFFFFF; --hero-muted:#C5C8D3; --hero-owe:#FFB98A;
+  --danger:#A3222B;
+  --shadow:0 1px 2px rgba(25,28,39,.05), 0 6px 18px rgba(25,28,39,.06);
+  --glass:rgba(243,242,238,.86);
+  --f:'Commissioner', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12141B; --surface:#1B1E28; --line:#2C303D; --ink:#ECEDF2; --muted:#A3A8B8;
+  --accent:#8EA8FF; --accent-soft:#232C4A; --on-accent:#0E1430;
+  --owe:#FFB28A; --owe-soft:#3A2418; --ok:#7FD6C0; --ok-soft:#173129;
+  --hero:#26305E; --on-hero:#FFFFFF; --hero-muted:#B5B9C7; --hero-owe:#FFB98A;
+  --danger:#FF8A92; --shadow:0 1px 0 rgba(255,255,255,.03); --glass:rgba(18,20,27,.86);
+  --tabbar:#252B44; --tab-ink:#A9B0C8; --tab-on:#8EA8FF; --tab-on-ink:#0E1430; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#12141B; --surface:#1B1E28; --line:#2C303D; --ink:#ECEDF2; --muted:#A3A8B8;
+  --accent:#8EA8FF; --accent-soft:#232C4A; --on-accent:#0E1430;
+  --owe:#FFB28A; --owe-soft:#3A2418; --ok:#7FD6C0; --ok-soft:#173129;
+  --hero:#26305E; --on-hero:#FFFFFF; --hero-muted:#B5B9C7; --hero-owe:#FFB98A;
+  --danger:#FF8A92; --shadow:0 1px 0 rgba(255,255,255,.03); --glass:rgba(18,20,27,.86);
+  --tabbar:#252B44; --tab-ink:#A9B0C8; --tab-on:#8EA8FF; --tab-on-ink:#0E1430; color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg); color:var(--ink); font-family:var(--f); font-size:15px; -webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button,input,select,textarea{font-family:inherit; font-size:16px; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.wrap{max-width:560px; margin:0 auto; padding-inline:18px; padding-block:20px 120px}
+h1{margin:0; font-family:var(--display); font-size:32px; font-weight:700; letter-spacing:-.4px; line-height:1.1; text-wrap:balance}
+h2{margin:0; font-family:var(--display); font-size:24px; font-weight:700; letter-spacing:-.2px; text-wrap:balance}
+.paper{background-color:var(--hero); background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px); background-size:16px 16px; background-position:-1px -1px}
+.week{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px}
+.week button{min-height:66px; border:1px solid var(--line); background:var(--surface); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:6px 0; color:var(--ink); box-shadow:var(--shadow)}
+.week .wd{font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.3px}
+.week .dn{font-size:18px; font-weight:800}
+.week .wdot{width:5px; height:5px; border-radius:50%; background:var(--accent); opacity:0}
+.week .has .wdot{opacity:1}
+.week button.today .dn{color:var(--accent)}
+.week button[aria-pressed="true"]{background:var(--hero); border-color:var(--hero); color:var(--on-hero)}
+.week button[aria-pressed="true"] .wd{color:var(--hero-muted)}
+.week button[aria-pressed="true"] .dn{color:var(--on-hero)}
+.week button[aria-pressed="true"] .wdot{background:var(--hero-owe)}
+.tl{display:flex; flex-direction:column; gap:10px}
+.tli{display:grid; grid-template-columns:44px 14px minmax(0,1fr); gap:8px; align-items:center}
+.tli .tt{display:flex; flex-direction:column; align-items:flex-end; font-size:15px; font-weight:800}
+.tli .tt small{font-size:11px; font-weight:600; color:var(--muted)}
+.rail{align-self:stretch; position:relative; display:flex; align-items:center; justify-content:center}
+.rail::before{content:''; position:absolute; left:50%; transform:translateX(-50%); top:-10px; bottom:-10px; width:2px; background:var(--line)}
+.tli:first-child .rail::before{top:50%}
+.tli:last-child .rail::before{bottom:50%}
+.tli:only-child .rail::before{display:none}
+.rail .dot{position:relative; width:12px; height:12px; border-radius:50%; background:var(--bg); border:2px solid var(--muted)}
+.rail .dot.done{background:var(--ok); border-color:var(--ok)}
+.rail .dot.next{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft)}
+.rail .dot.off{border-color:var(--line)}
+.tli.is-next .tt{color:var(--accent)}
+.tli .lcard{align-items:center; gap:10px}
+.tli .lcard .name, .tli .lcard .sub{white-space:normal; overflow:visible; line-height:1.3}
+.tli .lcard .chip{font-size:11px; padding:3px 8px}
+[hidden]{display:none !important}
+.chart{width:100%; height:auto; display:block; overflow:visible}
+.chart .bf{fill:var(--accent)}
+.chart .bf.dim{opacity:.32}
+.chart .base{stroke:var(--line); stroke-width:1}
+.chart .avg{stroke:var(--muted); stroke-width:1; stroke-dasharray:3 4}
+.chart text{fill:var(--muted); font-family:var(--f); font-size:11px}
+.chart text.sel{fill:var(--ink); font-weight:800}
+.chart text.val{fill:var(--ink); font-weight:800; font-size:12px}
+.chart g[data-act]{cursor:pointer}
+.chart .ln{fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.chart .pt{fill:var(--accent); stroke:var(--surface); stroke-width:2}
+.chart .gl{stroke:var(--line); stroke-width:1}
+.count{color:var(--on-hero); border-radius:20px; padding:16px; display:flex; gap:14px; align-items:center}
+.count .big{font-size:34px; font-weight:800; line-height:1}
+.count .k{font-size:12px; color:var(--hero-muted)}
+.trow{display:flex; gap:10px; align-items:center; padding:10px 0; border-top:1px solid var(--line)}
+.trow .sc{font-weight:800; font-size:16px; white-space:nowrap}
+.xbtn{width:44px; height:44px; border:none; background:none; color:var(--muted); display:inline-flex; align-items:center; justify-content:center; border-radius:12px; flex:none}
+.search{display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:0 6px 0 14px; box-shadow:var(--shadow); color:var(--muted)}
+.mic{width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; flex:none; cursor:pointer}
+.mic[aria-pressed="true"]{background:var(--danger); color:#FFFFFF; border-color:transparent; animation:micpulse 1.2s ease-in-out infinite}
+@keyframes micpulse{50%{box-shadow:0 0 0 7px rgba(163,34,43,.18)}}
+@media (prefers-reduced-motion: reduce){ .mic[aria-pressed="true"]{animation:none} }
+.field > .flab{display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:44px; margin-bottom:-4px}
+.search .mic{border:none; background:none; width:40px}
+.prep{display:flex; flex-direction:column; gap:8px}
+.prep .pl{display:flex; gap:10px; font-size:14px; line-height:1.45}
+.prep .pl b{flex:none; width:92px; color:var(--muted); font-weight:600; font-size:13px}
+.field .search input{border:none; background:none; padding:0; min-height:46px; border-radius:0}
+.search.sticky{position:sticky; top:calc(env(safe-area-inset-top, 0px) + 8px); z-index:4}
+.picker{max-height:264px; overflow-y:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface)}
+.picker .opt{display:flex; align-items:center; gap:12px; min-height:56px; padding:6px 12px; border-top:1px solid var(--line); cursor:pointer}
+.picker .opt:first-child{border-top:none}
+.picker .opt input{position:absolute; opacity:0; pointer-events:none}
+.picker .opt:has(input:checked){background:var(--accent-soft)}
+.picker .opt .tick{margin-left:auto; color:var(--accent); opacity:0}
+.picker .opt:has(input:checked) .tick{opacity:1}
+.picker .opt:has(input:focus-visible){outline:3px solid var(--accent); outline-offset:-3px}
+.search:focus-within{outline:3px solid var(--accent); outline-offset:1px}
+.search input{border:none; background:none; flex:1; min-width:0; min-height:50px; outline:none; color:var(--ink)}
+.syl{display:flex; align-items:center; gap:10px; min-height:46px; border-top:1px solid var(--line)}
+.syl label{flex:1; min-width:0; display:flex; align-items:center; gap:12px; min-height:46px; cursor:pointer}
+.syl input[type=checkbox]{width:22px; height:22px; accent-color:var(--ok); flex:none}
+.syl.done label span{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--line)}
+.addrow{display:flex; gap:8px}
+.addrow input{flex:1; min-width:0; min-height:46px; border:1px solid var(--line); background:var(--surface); border-radius:12px; padding:0 12px}
+.pausebar{background:var(--owe-soft); color:var(--owe); border-radius:16px; padding:12px 12px 12px 14px; display:flex; gap:10px; align-items:center; justify-content:space-between}
+.stat3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.stat3 > div{display:flex; flex-direction:column; gap:2px}
+.stat3 .k{font-size:12px; color:var(--muted)}
+.stat3 .v{font-size:17px; font-weight:800}
+.eyebrow{font-size:14px; font-weight:500; color:var(--muted)}
+.label{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted)}
+.stack{display:flex; flex-direction:column; gap:10px}
+.row{display:flex; gap:10px; align-items:center}
+.grid2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:14px; box-shadow:var(--shadow)}
+button.card, a.card{display:block; width:100%; text-align:left; font:inherit; color:inherit; text-decoration:none; transition:transform .12s ease}
+button.card:active, .btn:active, .tile:active{transform:scale(.985)}
+button.card.lcard, .lcard{display:flex; gap:12px; align-items:center; padding:12px 14px}
+.lcard .lt{width:46px; flex:none; display:flex; flex-direction:column; gap:1px}
+.lcard .lt .t{font-size:16px; font-weight:800}
+.lcard .lt .dur{font-size:11px; font-weight:600; color:var(--muted)}
+.lcard .who{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
+.lcard .name{font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.lcard .sub{font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.lcard.is-next{border:2px solid var(--accent); padding:11px 13px}
+.lcard.is-next .t{color:var(--accent)}
+.av{border-radius:14px; color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; flex:none; letter-spacing:.3px}
+.summary{color:var(--on-hero); border-radius:22px; padding:18px 6px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr))}
+.summary > *{display:flex; flex-direction:column; gap:3px; padding:0 12px; border:none; background:none; color:inherit; font:inherit; text-align:left}
+.summary > * + *{border-left:1px solid rgba(255,255,255,.14)}
+.summary .k{font-size:12px; color:var(--hero-muted)}
+.summary .v{font-size:22px; font-weight:800; white-space:nowrap}
+.summary .owe .v{color:var(--hero-owe)}
+.sec{display:flex; justify-content:space-between; align-items:baseline; margin-top:6px}
+.sec .label{margin:0}
+.tile{border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:2px; border:1px solid var(--line); background:var(--surface); text-align:left}
+.tile .big{font-size:26px; font-weight:800}
+.tile.owe{background:var(--owe-soft); border-color:transparent; color:var(--owe)}
+.chip{display:inline-flex; align-items:center; white-space:nowrap; font-size:12px; font-weight:700; border-radius:999px; padding:4px 10px}
+.chip.ok{background:var(--ok-soft); color:var(--ok)}
+.chip.owe{background:var(--owe-soft); color:var(--owe)}
+.chip.next{background:var(--accent); color:var(--on-accent)}
+.chip.off{background:var(--line); color:var(--muted)}
+.lesson{display:flex; gap:12px; align-items:flex-start}
+.lesson .t{width:48px; font-weight:700; color:var(--muted); font-size:15px}
+.lesson .who{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
+.lesson .name{font-size:16px; font-weight:700}
+.lesson .sub{font-size:13px; color:var(--muted)}
+.card.is-next{border:2px solid var(--accent)}
+.card.is-next .t{color:var(--accent)}
+.card.is-off{opacity:.6}
+.btn{min-height:48px; border-radius:14px; border:1px solid var(--line); background:var(--surface); font-weight:600; padding:0 16px; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; color:var(--ink)}
+.btn.primary{background:var(--accent); color:var(--on-accent); border-color:transparent; font-weight:700}
+.btn.soft{background:var(--accent-soft); color:var(--accent); border-color:transparent; font-weight:700}
+.btn.good{background:var(--ok); color:var(--surface); border-color:transparent; font-weight:700}
+.btn.danger{color:var(--danger)}
+.btn.block{width:100%}
+.btn.sm{min-height:44px; font-size:14px}
+.datebar{display:flex; align-items:center; gap:6px}
+.iconbtn{width:44px; height:44px; border-radius:12px; border:1px solid var(--line); background:var(--surface); display:inline-flex; align-items:center; justify-content:center; color:var(--ink)}
+.fab{position:fixed; right:max(18px, calc(50% - 262px)); bottom:calc(88px + env(safe-area-inset-bottom,0px)); height:56px; padding:0 20px 0 16px; gap:8px; border-radius:18px; border:none; background:var(--accent); color:var(--on-accent); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; box-shadow:0 10px 24px rgba(31,79,209,.32); z-index:5}
+.fab:active{transform:scale(.97)}
+nav.tabs{position:fixed; left:0; right:0; bottom:0; padding:0 14px calc(12px + env(safe-area-inset-bottom,0px)); z-index:6; pointer-events:none}
+nav.tabs .in{pointer-events:auto; max-width:520px; margin:0 auto; display:flex; gap:2px; padding:6px; background:var(--tabbar); border-radius:28px; box-shadow:0 14px 32px rgba(20,24,50,.30), 0 2px 6px rgba(20,24,50,.16)}
+nav.tabs button{position:relative; flex:1 1 0; min-width:0; min-height:52px; border:none; background:none; color:var(--tab-ink); border-radius:22px; display:flex; align-items:center; justify-content:center; gap:7px; padding:0 8px; font-size:14px; font-weight:700; transition:flex-grow .28s cubic-bezier(.3,.7,.2,1), background-color .2s, color .2s}
+nav.tabs button:active{transform:scale(.96)}
+nav.tabs button[aria-current="page"]{flex-grow:2.7; background:var(--tab-on); color:var(--tab-on-ink)}
+nav.tabs .ti{position:relative; display:flex; flex:none}
+nav.tabs .tlab{display:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+nav.tabs button[aria-current="page"] .tlab{display:block}
+nav.tabs .badge{position:absolute; top:-6px; right:-9px; min-width:17px; height:17px; padding:0 4px; border-radius:999px; background:var(--hero-owe); color:#3A1A06; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 2px var(--tabbar)}
+nav.tabs button[aria-current="page"] .badge{display:none}
+@media (prefers-reduced-motion: reduce){ nav.tabs button{transition:none} }
+.hero{color:var(--on-hero); border-radius:22px; padding:18px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+.hero .k{font-size:13px; color:var(--hero-muted)}
+.hero .v{font-size:28px; font-weight:800}
+.seg{display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.seg input{position:absolute; opacity:0; pointer-events:none}
+.seg label{min-height:44px; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; padding:0 6px; text-align:center}
+.seg input:checked + label{background:var(--ok); color:var(--surface); font-weight:700}
+.seg input:focus-visible + label{outline:3px solid var(--accent); outline-offset:-3px}
+.tabs2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); background:var(--line); border-radius:12px; padding:4px; gap:4px}
+.tabs2 button{min-height:40px; border:none; border-radius:9px; background:transparent; font-size:14px; color:var(--muted)}
+.tabs2 button[aria-pressed="true"]{background:var(--surface); color:var(--ink); font-weight:700}
+.field{display:flex; flex-direction:column; gap:6px}
+.field > span{font-size:13px; font-weight:700; color:var(--muted)}
+.field input,.field select,.field textarea{min-height:48px; border:1px solid var(--line); background:var(--surface); border-radius:12px; padding:10px 12px; width:100%}
+.field textarea{min-height:110px; resize:vertical; line-height:1.5}
+.msg{min-height:230px !important; border-radius:18px 18px 18px 6px !important}
+.sheet{position:fixed; inset:0; background:var(--bg); overflow-y:auto; z-index:20; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet .wrap{padding-block:12px 40px}
+.sheethead{display:flex; align-items:center; gap:8px; min-height:52px; position:sticky; top:0; z-index:3; margin-inline:-18px; padding-inline:18px; background:var(--glass); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px)}
+.back{min-height:44px; border:none; background:none; color:var(--accent); font-weight:700; padding:0 4px 0 0; display:inline-flex; align-items:center; gap:2px}
+.avatar{width:54px; height:54px; border-radius:18px; color:#fff; font-size:19px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:none}
+.bar{height:10px; border-radius:999px; background:var(--line); overflow:hidden}
+.bar > i{display:block; height:100%; background:var(--accent); border-radius:999px}
+.hist{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line)}
+.hist:last-child{border-bottom:none}
+.hist .d{width:56px; font-size:13px; font-weight:700; color:var(--muted); flex:none}
+.banner{background:var(--accent-soft); color:var(--ink); border-radius:16px; padding:10px 10px 10px 14px; font-size:14px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+.empty{text-align:center; padding:28px 12px; color:var(--muted); display:flex; flex-direction:column; gap:12px; align-items:center}
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(100px + env(safe-area-inset-bottom,0px)); background:var(--hero); color:var(--on-hero); padding:12px 16px; border-radius:12px; font-weight:600; z-index:40; max-width:calc(100% - 32px); text-align:center}
+.cal{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:10px 8px 8px}
+.cal .wd, .cal .days{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:2px}
+.cal .wd div{text-align:center; font-size:11px; font-weight:700; color:var(--muted); padding:4px 0 6px; text-transform:uppercase; letter-spacing:.4px}
+.cal .days button{min-height:52px; border:none; background:none; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; padding:6px 0 4px; color:var(--ink); font-size:15px; font-weight:600}
+.cal .days button.out{color:var(--muted); opacity:.45}
+.cal .days button.today .n{color:var(--accent); font-weight:800}
+.cal .days button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent)}
+.cal .days button[aria-pressed="true"] .n{color:var(--on-accent)}
+.cal .dots{display:flex; gap:3px; min-height:6px; justify-content:center; flex-wrap:wrap; max-width:30px}
+.cal .dots i{width:6px; height:6px; border-radius:50%; display:block}
+.cal .days button[aria-pressed="true"] .dots i{box-shadow:0 0 0 1.5px var(--on-accent)}
+.cal .more{font-size:9px; font-weight:800; line-height:6px}
+.remind{background:var(--accent); color:var(--on-accent); border-radius:16px; padding:14px; display:flex; gap:12px; align-items:flex-start}
+.remind b{display:block; font-size:15px}
+.remind .r-sub{font-size:13px; opacity:.9; line-height:1.45}
+.remind a{color:inherit}
+.addr{color:var(--accent); font-weight:600; text-decoration:none}
+.check{display:flex; gap:10px; align-items:center; min-height:44px}
+.check input{width:22px; height:22px; accent-color:var(--accent)}
+@media (prefers-reduced-motion: no-preference){ .sheet{animation:up .18s ease-out} @keyframes up{from{transform:translateY(16px); opacity:.6}to{transform:none; opacity:1}} }
+</style>
+</head>
+<body>
+
+
+<div id="main"></div>
+<button class="fab" id="fab" data-act="add-lesson">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg><span id="fabl">Μάθημα</span>
+</button>
+<nav class="tabs" aria-label="Κύριο μενού"><div class="in" id="tabs"></div></nav>
+<div id="sheet" class="sheet" hidden></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(function(){
+const KEY = 'idiaitera.v1';
+const COLORS = ['#1F4FD1','#0E6656','#7A3FC4','#B4460F','#B0305C','#2F6F2A'];
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-3);
+const pad = (n) => String(n).padStart(2,'0');
+const ymd = (d) => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+const parseYmd = (s) => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate()+n); return ymd(d); };
+const today = () => ymd(new Date());
+const money = (n) => Math.round(n).toLocaleString('el-GR') + '€';
+const longDate = (s) => parseYmd(s).toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'});
+const shortDate = (s) => parseYmd(s).toLocaleDateString('el-GR', {day:'numeric', month:'short'});
+const first = (name) => String(name||'').trim().split(/\s+/)[0] || '';
+const initials = (name) => String(name||'').trim().split(/\s+/).slice(0,2).map(w => w[0] || '').join('').toUpperCase();
+
+/* ---------- storage (this device only) ---------- */
+function load(){ try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch(e){ return null; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+function seed(){
+  const t = today();
+  const st = (o) => Object.assign({id:uid(), parentPhone:'', address:'', pkg:0, color:COLORS[0]}, o);
+  const maria = st({name:'Μαρία Κωνσταντίνου', g:'f', subject:'Μαθηματικά', grade:'Γ\' Λυκείου', parentName:'κα Κωνσταντίνου', price:25, address:'Τσιμισκή 45, 3ος όροφος, Θεσσαλονίκη', color:COLORS[2]});
+  const nikos = st({name:'Νίκος Παπαδόπουλος', g:'m', subject:'Φυσική', grade:'Β\' Λυκείου', parentName:'κα Παπαδοπούλου', price:25, pkg:8, address:'Εγνατίας 120, Θεσσαλονίκη', color:COLORS[0]});
+  const eleni = st({name:'Ελένη Δημητρίου', g:'f', subject:'Αγγλικά', grade:'Proficiency', parentName:'κ. Δημητρίου', price:30, address:'Online (Zoom)', color:COLORS[1]});
+  const giorgos = st({name:'Γιώργος Σταύρου', g:'m', subject:'Άλγεβρα', grade:'Α\' Λυκείου', parentName:'κα Σταύρου', price:25, address:'Βασ. Όλγας 88, Καλαμαριά', color:COLORS[3]});
+  const L = [];
+  const les = (s, d, time, status, extra) => L.push(Object.assign({id:uid(), studentId:s.id, date:addDays(t,d), time, status, price:s.price, topic:'', focus:'', hw:'', nextHw:'', note:''}, extra||{}));
+  les(maria,-7,'15:00','done',{topic:'Παράγωγοι, επανάληψη', focus:'good', hw:'yes'});
+  les(maria,-3,'15:00','done',{topic:'Όρια, εισαγωγή', focus:'mid', hw:'yes'});
+  les(maria,0,'15:00','done',{topic:'Όρια συναρτήσεων (Κεφ. 2)', focus:'good', hw:'yes', nextHw:'Ασκήσεις 4–9, σελ. 58'});
+  les(nikos,-21,'17:00','done',{topic:'Κυκλική κίνηση', focus:'mid', hw:'no', note:'Δεν είχε κάνει την εργασία.'});
+  les(nikos,-17,'17:00','done',{topic:'Οριζόντια βολή', focus:'good', hw:'yes', note:'Διαγώνισμα 16/20. Λάθη στις μονάδες.'});
+  les(nikos,-14,'17:00','done',{topic:'Ορμή', focus:'good', hw:'yes'});
+  les(nikos,-10,'17:00','done',{topic:'Κρούσεις', focus:'good', hw:'yes'});
+  les(nikos,-7,'17:00','done',{topic:'Ορμή και κρούσεις (Κεφ. 2)', focus:'good', hw:'yes', note:'Καλή κατανόηση, θέλει εξάσκηση στις πλάγιες κρούσεις.'});
+  les(nikos,0,'17:00','scheduled');
+  les(eleni,-7,'18:30','done',{topic:'Reading, Paper 1', focus:'good', hw:'yes'});
+  les(eleni,0,'18:30','scheduled');
+  les(giorgos,-21,'20:00','done',{topic:'Ταυτότητες', focus:'mid', hw:'yes'});
+  les(giorgos,-14,'20:00','done',{topic:'Εξισώσεις 1ου βαθμού', focus:'mid', hw:'no'});
+  les(giorgos,-7,'20:00','done',{topic:'Ανισώσεις', focus:'good', hw:'yes'});
+  les(giorgos,-3,'20:00','done',{topic:'Απόλυτες τιμές', focus:'good', hw:'yes'});
+  les(giorgos,0,'20:00','scheduled');
+  les(maria,2,'15:00','scheduled');
+  les(nikos,3,'17:00','scheduled');
+  les(giorgos,4,'20:00','scheduled');
+  const P = [
+    {id:uid(), studentId:nikos.id, amount:200, date:addDays(t,-21), note:'Πακέτο 8 μαθημάτων'},
+    {id:uid(), studentId:eleni.id, amount:30, date:addDays(t,-7), note:''}
+  ];
+  const tst = (d, title, score, max) => ({id:uid(), date:addDays(t,d), title, score, max});
+  nikos.tests = [tst(-40,'Κινηματική',13,20), tst(-25,'Οριζόντια βολή',16,20), tst(-10,'Ορμή',17,20)];
+  maria.tests = [tst(-30,'Παράγωγοι',72,100), tst(-6,'Όρια',81,100)];
+  const syl = (titles, nDone) => titles.map((title, i) => ({id:uid(), title, done:i < nDone}));
+  nikos.syllabus = syl(['Οριζόντια βολή','Κυκλική κίνηση','Ορμή','Κρούσεις','Νόμοι των αερίων','Κινητική θεωρία','Θερμοδυναμική','Ηλεκτρικό πεδίο','Δυναμικό','Κίνηση φορτίων σε πεδίο'], 4);
+  maria.syllabus = syl(['Συναρτήσεις','Όρια','Συνέχεια','Παράγωγοι','Εφαρμογές παραγώγων','Ολοκληρώματα'], 2);
+  eleni.syllabus = syl(['Reading','Writing: essay','Writing: letter','Listening','Speaking','Grammar & Vocabulary'], 3);
+  const yr = new Date().getMonth() >= 6 ? new Date().getFullYear() + 1 : new Date().getFullYear();
+  maria.examName = 'Πανελλαδικές'; maria.examDate = yr + '-06-02';
+  nikos.examName = 'Τελικές εξετάσεις'; nikos.examDate = yr + '-05-25';
+  eleni.examName = 'Proficiency'; eleni.examDate = addDays(t, 63);
+  // earlier months: paid weekly lessons, so the income chart has history (balances stay unchanged)
+  const hist = [[maria,'15:00',1],[nikos,'17:00',2],[eleni,'18:30',4],[giorgos,'20:00',5]];
+  for (let k = 5; k >= 1; k--) {
+    const base = new Date(); base.setDate(1); base.setMonth(base.getMonth() - k);
+    hist.forEach(([s, time, dow], si) => {
+      const n = k === 1 ? 2 : 3 + ((k + si) % 2);
+      for (let w = 0; w < n; w++) L.push({id:uid(), studentId:s.id, date:ymd(new Date(base.getFullYear(), base.getMonth(), 2 + dow + w*7)), time, status:'done', price:s.price, topic:'', focus:'good', hw:'yes', nextHw:'', note:''});
+      P.push({id:uid(), studentId:s.id, amount:n*s.price, date:ymd(new Date(base.getFullYear(), base.getMonth(), k === 1 ? 14 : 26)), note:''});
+    });
+  }
+  return {v:1, demo:true, teacher:'', students:[maria,nikos,eleni,giorgos], lessons:L, payments:P};
+}
+function blank(){ return {v:1, demo:false, teacher:'', students:[], lessons:[], payments:[]}; }
+
+let S = load();
+if (!S || !Array.isArray(S.students)) { S = seed(); save(); }
+
+/* ---------- money logic ---------- */
+function stu(id){ return S.students.find(s => s.id === id); }
+function balance(s){
+  const charged = S.lessons.filter(l => l.studentId === s.id && l.status === 'done').reduce((a,l) => a + (Number(l.price)||0), 0);
+  const paid = S.payments.filter(p => p.studentId === s.id).reduce((a,p) => a + (Number(p.amount)||0), 0);
+  return paid - charged; // >0 prepaid credit, <0 owes
+}
+function owes(s){ const b = balance(s); return b < 0 ? -b : 0; }
+function creditLessons(s){ const b = balance(s); return (b > 0 && s.price > 0) ? Math.floor(b / s.price) : 0; }
+function totalOwed(){ return S.students.reduce((a,s) => a + owes(s), 0); }
+function collectedThisMonth(){ const m = today().slice(0,7); return S.payments.filter(p => p.date.slice(0,7) === m).reduce((a,p) => a + (Number(p.amount)||0), 0); }
+
+/* ---------- message text ---------- */
+function art(s){ return s.g === 'f' ? 'την' : 'τον'; }
+function acc(name){ const f = first(name); return /ς$/.test(f) ? f.slice(0,-1) : f; }
+const MONTH_ACC = ['Ιανουάριο','Φεβρουάριο','Μάρτιο','Απρίλιο','Μάιο','Ιούνιο','Ιούλιο','Αύγουστο','Σεπτέμβριο','Οκτώβριο','Νοέμβριο','Δεκέμβριο'];
+function monthAcc(ym){ return MONTH_ACC[Number(ym.split('-')[1]) - 1]; }
+const MONTH_GEN = ['Ιανουαρίου','Φεβρουαρίου','Μαρτίου','Απριλίου','Μαΐου','Ιουνίου','Ιουλίου','Αυγούστου','Σεπτεμβρίου','Οκτωβρίου','Νοεμβρίου','Δεκεμβρίου'];
+function monthGen(ym){ return MONTH_GEN[Number(ym.split('-')[1]) - 1]; }
+function reportMonth(){ const d = new Date(); if (d.getDate() <= 5) d.setDate(0); return ymd(d).slice(0,7); }
+function monthStats(s, ym){
+  const ls = S.lessons.filter(l => l.studentId === s.id && l.date.slice(0,7) === ym);
+  const done = ls.filter(l => l.status === 'done').sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  return {done, cancelled: ls.filter(l => l.status === 'cancelled').length};
+}
+function monthReport(s, ym){
+  const {done, cancelled} = monthStats(s, ym);
+  const L = [];
+  L.push('Καλησπέρα' + (s.parentName ? ' ' + s.parentName : '') + '! Μια σύνοψη για τα μαθήματα με ' + art(s) + ' ' + acc(s.name) + ' τον ' + monthAcc(ym) + ':');
+  if (!done.length) {
+    L.push('Δεν έγιναν μαθήματα αυτόν τον μήνα.');
+  } else {
+    const b = [];
+    b.push('• Μαθήματα: ' + done.length + (cancelled ? ' (' + cancelled + (cancelled === 1 ? ' ακυρώθηκε)' : ' ακυρώθηκαν)') : ''));
+    const topics = [...new Set(done.map(l => (l.topic || '').trim()).filter(Boolean))];
+    if (topics.length) b.push('• Καλύψαμε: ' + topics.join(', '));
+    const hw = done.filter(l => l.hw === 'yes' || l.hw === 'no');
+    if (hw.length) { const y = hw.filter(l => l.hw === 'yes').length; b.push('• Εργασίες: ' + (y === hw.length ? 'τις έκανε όλες (' + y + '/' + hw.length + ')' : 'έκανε τις ' + y + ' από τις ' + hw.length)); }
+    const fs = done.filter(l => l.focus);
+    if (fs.length) {
+      const score = {good:3, mid:2, low:1};
+      const avg = fs.reduce((a,l) => a + score[l.focus], 0) / fs.length;
+      let t = '• Συγκέντρωση: ' + (avg >= 2.6 ? 'πολύ καλή' : avg >= 1.8 ? 'μέτρια, με περιθώριο βελτίωσης' : 'χαμηλή, θέλει προσοχή');
+      if (fs.length >= 3) { const a = score[fs[0].focus], z = score[fs[fs.length-1].focus]; if (z > a) t += ', με βελτίωση στα τελευταία μαθήματα'; if (z < a) t += ', λίγο πιο πεσμένη στα τελευταία μαθήματα'; }
+      b.push(t);
+    }
+    const sy = s.syllabus || [];
+    if (sy.length) { const dn = sy.filter(x => x.done).length; b.push('• Ύλη: καλύφθηκε το ' + Math.round(dn / sy.length * 100) + '% (' + dn + ' από ' + sy.length + ' ενότητες)'); }
+    L.push(b.join('\n'));
+  }
+  const nxt = S.lessons.filter(l => l.studentId === s.id && l.status === 'scheduled' && l.date >= today()).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time))[0];
+  if (nxt) L.push('Επόμενο μάθημα: ' + parseYmd(nxt.date).toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'}) + ', ' + nxt.time + '.');
+  const o = owes(s), c = creditLessons(s);
+  if (o > 0) L.push('Υπόλοιπο μαθημάτων: ' + money(o) + '.');
+  else if (s.pkg > 0) L.push(c > 0 ? 'Απομένουν ' + c + ' μαθήματα από το πακέτο.' : 'Το πακέτο ολοκληρώθηκε, οπότε το επόμενο μάθημα ξεκινά νέο πακέτο.');
+  const tests = (s.tests || []).slice().sort((a,b) => a.date.localeCompare(b.date));
+  const mt = tests.filter(x => x.date.slice(0,7) === ym);
+  if (mt.length) {
+    L.push('Διαγωνίσματα:\n' + mt.map(x => { const i = tests.indexOf(x), prev = i > 0 ? tests[i-1] : null;
+      const p = Math.round(x.score / x.max * 100), pp = prev ? Math.round(prev.score / prev.max * 100) : null;
+      return '• ' + x.title + ': ' + x.score + '/' + x.max + (pp != null ? (p > pp ? ' (ανέβηκε από ' + prev.score + '/' + prev.max + ')' : p < pp ? ' (το προηγούμενο ήταν ' + prev.score + '/' + prev.max + ')' : '') : ''); }).join('\n'));
+  }
+  if (s.examDate && s.examDate >= today()) { const w = Math.ceil((parseYmd(s.examDate) - parseYmd(today())) / (7*86400000)); L.push('Μέχρι ' + (s.examName ? 'τις ' + s.examName : 'τις εξετάσεις') + ' μένουν ' + w + ' εβδομάδες.'); }
+  L.push('Ευχαριστώ για τη συνεργασία!' + (S.teacher ? '\n' + S.teacher : ''));
+  return L.join('\n\n');
+}
+function monthEndNudge(){
+  const d = new Date(), last = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+  if (!S.students.length || !(d.getDate() >= last - 2 || d.getDate() <= 3)) return '';
+  return '<div class="banner" style="flex-wrap:nowrap"><span style="min-width:0">Τέλος μήνα: στείλε στους γονείς τη <b>σύνοψη του ' + monthGen(reportMonth()) + '</b></span><button class="btn sm" style="min-height:40px;padding:0 12px;font-size:13px;background:var(--surface);color:var(--accent);border-color:transparent;white-space:nowrap" data-act="reports">Αναφορές</button></div>';
+}
+function his(s){ return s.g === 'f' ? 'της' : 'του'; }
+function lessonMessage(l, withMoney){
+  const s = stu(l.studentId); if (!s) return '';
+  const lines = [];
+  lines.push('Καλησπέρα' + (s.parentName ? ' ' + s.parentName : '') + '!');
+  let p = 'Σήμερα με ' + art(s) + ' ' + acc(s.name) + ' δουλέψαμε' + (l.topic ? ': ' + l.topic + '.' : '.');
+  if (l.focus === 'good') p += ' Ήταν πολύ ' + (s.g === 'f' ? 'συγκεντρωμένη' : 'συγκεντρωμένος') + '.';
+  if (l.focus === 'mid') p += ' Η συγκέντρωση ήταν μέτρια.';
+  if (l.focus === 'low') p += ' Δυσκολεύτηκε να συγκεντρωθεί σήμερα.';
+  if (l.hw === 'yes') p += ' Είχε κάνει την εργασία ' + his(s) + '.';
+  if (l.hw === 'no') p += ' Δεν είχε κάνει την εργασία ' + his(s) + '.';
+  lines.push(p);
+  if (l.nextHw) lines.push('Για την επόμενη φορά: ' + l.nextHw + '.');
+  if (withMoney) {
+    const o = owes(s), c = creditLessons(s);
+    if (o > 0) lines.push('Υπόλοιπο μαθημάτων: ' + money(o) + '.');
+    else if (s.pkg > 0) lines.push(c > 0 ? ('Απομένουν ' + c + ' μαθήματα από το πακέτο.') : 'Το πακέτο ολοκληρώθηκε.');
+  }
+  if (S.teacher) lines.push(S.teacher);
+  return lines.join('\n\n');
+}
+function reminderMessage(s){
+  const o = owes(s), n = s.price > 0 ? Math.round(o / s.price) : 0;
+  return 'Καλησπέρα' + (s.parentName ? ' ' + s.parentName : '') + '! Μια μικρή υπενθύμιση για τα μαθήματα ' + (s.g === 'f' ? 'της ' : 'του ') + first(s.name) +
+    ': ' + (n > 0 ? n + (n === 1 ? ' μάθημα, ' : ' μαθήματα, ') : '') + 'σύνολο ' + money(o) + '. Ευχαριστώ πολύ!' + (S.teacher ? '\n\n' + S.teacher : '');
+}
+
+/* ---------- UI state ---------- */
+const UI = { tab:'today', day:today(), owedTab:'owe', sheet:null, confirmWipe:false, calMonth:today().slice(0,7), calSel:today() };
+const TABS = [
+  ['today','Σήμερα','<path d="M4 6h16M4 11h16M4 16h10"></path>'],
+  ['calendar','Ημερολόγιο','<rect x="3.5" y="5" width="17" height="15" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path>'],
+  ['students','Μαθητές','<circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"></path><path d="M16 5.5a3 3 0 0 1 0 5.6M18 14.4c1.5.7 2.4 2.3 2.6 4.6"></path>'],
+  ['owed','Έσοδα','<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"></path>'],
+  ['settings','Ρυθμίσεις','<circle cx="12" cy="12" r="3"></circle><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"></path>']
+];
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); }
+
+/* ---------- main tabs ---------- */
+function renderTabs(){
+  const nOwe = S.students.filter(s => owes(s) > 0).length;
+  $('#tabs').innerHTML = TABS.map(([k,label,icon]) => {
+    const badge = (k === 'owed' && nOwe) ? '<span class="badge num" aria-hidden="true">'+nOwe+'</span>' : '';
+    return '<button data-act="tab" data-k="'+k+'" aria-label="'+label+(badge?', '+nOwe+' οφειλές':'')+'"'+(UI.tab===k?' aria-current="page"':'')+'><span class="ti"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(UI.tab===k?'2.2':'1.9')+'" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg>'+badge+'</span><span class="tlab">'+label+'</span></button>';
+  }).join('');
+  $('#fab').hidden = !(UI.tab === 'today' || UI.tab === 'students' || UI.tab === 'calendar');
+  $('#fabl').textContent = UI.tab === 'students' ? 'Μαθητής' : 'Μάθημα';
+  $('#fab').setAttribute('aria-label', UI.tab === 'students' ? 'Νέος μαθητής' : 'Νέο μάθημα');
+  $('#fab').dataset.act = UI.tab === 'students' ? 'new-student' : 'add-lesson';
+}
+function demoBanner(){
+  return S.demo ? '<div class="banner" style="flex-wrap:nowrap"><span style="min-width:0">Βλέπεις <b>παραδείγματα</b></span><button class="btn sm" style="min-height:40px;padding:0 12px;font-size:13px;background:var(--surface);color:var(--accent);border-color:transparent;white-space:nowrap" data-act="clear-demo">Ξεκίνα από το μηδέν</button></div>' : '';
+}
+/* ---------- dictation (speech to text) ---------- */
+const MIC_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"></path></svg>';
+function mic(target){ return '<button type="button" class="mic" data-act="dictate" data-target="'+target+'" aria-label="Υπαγόρευση με φωνή" aria-pressed="'+(UI.dictating===target)+'">'+MIC_ICON+'</button>'; }
+let REC = null;
+function refreshMic(){ document.querySelectorAll('[data-act="dictate"]').forEach(b => b.setAttribute('aria-pressed', UI.dictating === b.dataset.target)); }
+function stopDictation(){ const r = REC; REC = null; UI.dictating = null; try { if (r) r.stop(); } catch(e){} refreshMic(); }
+function keyboardTip(el){ if (el) el.focus(); toast('Πάτα το μικρόφωνο στο πληκτρολόγιο του κινητού και μίλα'); }
+function dictate(target){
+  const el = document.getElementById(target); if (!el) return;
+  if (UI.dictating === target) { stopDictation(); return; }
+  stopDictation();
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { keyboardTip(el); return; }
+  let rec; try { rec = new SR(); } catch(e) { keyboardTip(el); return; }
+  rec.lang = 'el-GR'; rec.interimResults = true; rec.continuous = true;
+  const base = el.value; let finalTxt = '';
+  const join = (a, b) => !a ? b : !b ? a : (/\s$/.test(a) ? a + b : a + ' ' + b);
+  rec.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i], t = r[0].transcript.trim(); if (r.isFinal) finalTxt = join(finalTxt, t); else interim = join(interim, t); }
+    let spoken = join(finalTxt, interim); if (!base && spoken) spoken = spoken.charAt(0).toUpperCase() + spoken.slice(1);
+    el.value = join(base, spoken); el.dispatchEvent(new Event('input', {bubbles:true}));
+  };
+  rec.onerror = (e) => { const blocked = /not-allowed|service-not-allowed|audio-capture/.test(e.error || ''); if (REC === rec) stopDictation(); if (blocked) keyboardTip(el); else if (e.error === 'no-speech') toast('Δεν ακούστηκε κάτι. Πάτα ξανά και μίλα.'); };
+  rec.onend = () => { if (REC === rec) { REC = null; UI.dictating = null; refreshMic(); } };
+  REC = rec; UI.dictating = target; refreshMic();
+  try { rec.start(); toast('Μίλα τώρα. Πάτα ξανά το μικρόφωνο όταν τελειώσεις.'); } catch(e) { stopDictation(); keyboardTip(el); }
+}
+function timeWords(t){
+  let [h, m] = t.split(':').map(Number); let pre = '';
+  if (m === 45) { h = (h + 1) % 24; pre = ' παρά τέταρτο'; } else if (m === 30) pre = ' και μισή'; else if (m === 15) pre = ' και τέταρτο'; else if (m) pre = ' και ' + m;
+  const h12 = h % 12 || 12, part = h < 12 ? 'το πρωί' : h < 15 ? 'το μεσημέρι' : h < 20 ? 'το απόγευμα' : 'το βράδυ';
+  return 'στις ' + h12 + pre + ' ' + part;
+}
+function prepInfo(l){
+  const s = stu(l.studentId); if (!s) return {rows:[], speech:''};
+  const last = S.lessons.filter(x => x.studentId === s.id && x.status === 'done' && (x.date + x.time) < (l.date + l.time)).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time))[0];
+  const nextSyl = (s.syllabus || []).find(x => !x.done);
+  const rows = [], sp = ['Μάθημα με ' + art(s) + ' ' + acc(s.name) + ', ' + s.subject + ', ' + timeWords(l.time) + '.'];
+  if (last) {
+    rows.push(['Τελευταία φορά', shortDate(last.date) + (last.topic ? ': ' + last.topic : '')]);
+    sp.push('Την τελευταία φορά, ' + longDate(last.date) + (last.topic ? ', κάνατε ' + last.topic : '') + '.');
+    if (last.nextHw) { rows.push(['Εργασία', last.nextHw]); sp.push('Του έδωσες για εργασία: ' + last.nextHw + '.'); }
+    if (last.note) { rows.push(['Σημείωση', last.note]); sp.push('Σημείωση: ' + last.note); }
+  } else { rows.push(['Τελευταία φορά', 'Πρώτο μάθημα']); sp.push('Είναι το πρώτο σας μάθημα.'); }
+  if (nextSyl) { rows.push(['Επόμενη ύλη', nextSyl.title]); sp.push('Επόμενη ενότητα στην ύλη: ' + nextSyl.title + '.'); }
+  if (owes(s) > 0) { rows.push(['Οφειλή', money(owes(s))]); sp.push('Χρωστάει ' + money(owes(s)) + '.'); }
+  else if (s.pkg > 0 && creditLessons(s) <= 1) { rows.push(['Πακέτο', creditLessons(s) ? 'Τελευταίο μάθημα' : 'Για ανανέωση']); sp.push(creditLessons(s) ? 'Είναι το τελευταίο μάθημα του πακέτου.' : 'Το πακέτο θέλει ανανέωση.'); }
+  return {rows, speech: sp.join(' ').replace(/Του έδωσες/, s.g === 'f' ? 'Της έδωσες' : 'Του έδωσες')};
+}
+function prepCard(l){
+  const {rows} = prepInfo(l);
+  return '<div class="card prep"><div class="row" style="justify-content:space-between"><div style="font-weight:700">Προετοιμασία</div>'+'</div>' + rows.map(([k,v]) => '<div class="pl"><b>'+esc(k)+'</b><span style="min-width:0">'+esc(v)+'</span></div>').join('') + '</div>';
+}
+function timeline(list, nextId){
+  return '<div class="tl">' + list.map(l => {
+    const isNext = l.id === nextId;
+    const dc = l.status === 'done' ? 'done' : l.status === 'cancelled' ? 'off' : (isNext ? 'next' : '');
+    return '<div class="tli'+(isNext?' is-next':'')+'"><div class="tt num">'+esc(l.time)+'<small>60΄</small></div><div class="rail"><i class="dot '+dc+'"></i></div>' + lessonCard(l, isNext, true) + '</div>';
+  }).join('') + '</div>';
+}
+function weekStrip(){
+  const d = parseYmd(UI.day), mon = addDays(UI.day, -((d.getDay() + 6) % 7)), t = today();
+  const names = ['Δε','Τρ','Τε','Πε','Πα','Σα','Κυ'];
+  let h = '';
+  for (let i = 0; i < 7; i++) {
+    const k = addDays(mon, i), n = S.lessons.filter(l => l.date === k && l.status !== 'cancelled').length;
+    h += '<button data-act="day-set" data-day="'+k+'" class="'+(n?'has ':'')+(k===t?'today':'')+'" aria-pressed="'+(k===UI.day)+'" aria-label="'+esc(longDate(k))+(n?', '+n+(n===1?' μάθημα':' μαθήματα'):'')+'"><span class="wd">'+names[i]+'</span><span class="dn num">'+parseYmd(k).getDate()+'</span><span class="wdot"></span></button>';
+  }
+  return '<div class="week">' + h + '</div>';
+}
+const MONTH_NOM = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
+function revenueChart(){
+  const now = new Date(), months = [];
+  for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); months.push(ymd(d).slice(0,7)); }
+  const vals = months.map(ym => S.payments.filter(p => p.date.slice(0,7) === ym).reduce((a,p) => a + (Number(p.amount)||0), 0));
+  const counts = months.map(ym => S.payments.filter(p => p.date.slice(0,7) === ym).length);
+  const sel = (UI.chartSel == null || UI.chartSel > 5) ? 5 : UI.chartSel;
+  const W = 320, top = 26, plotH = 110, base = top + plotH, slot = W / 6, bw = 30;
+  const mx = Math.max(100, Math.ceil(Math.max(...vals) / 100) * 100);
+  const avg = vals.slice(0,5).reduce((a,v) => a+v, 0) / 5;
+  const yv = (v) => base - (v / mx) * plotH;
+  let g = '<line class="base" x1="0" x2="'+W+'" y1="'+base+'" y2="'+base+'"></line>';
+  if (avg > 0) g += '<line class="avg" x1="0" x2="'+W+'" y1="'+yv(avg).toFixed(1)+'" y2="'+yv(avg).toFixed(1)+'"></line>';
+  vals.forEach((v, i) => {
+    const x = i*slot + (slot - bw)/2, y = yv(v), h = base - y, r = Math.min(4, h);
+    const path = h > 0 ? 'M'+x+' '+base+' V'+(y+r)+' Q'+x+' '+y+' '+(x+r)+' '+y+' H'+(x+bw-r)+' Q'+(x+bw)+' '+y+' '+(x+bw)+' '+(y+r)+' V'+base+' Z' : '';
+    const lbl = new Date(Number(months[i].slice(0,4)), Number(months[i].slice(5))-1, 1).toLocaleDateString('el-GR', {month:'short'}).replace('.', '');
+    g += '<g data-act="chart-bar" data-i="'+i+'"><rect x="'+(i*slot)+'" y="0" width="'+slot+'" height="'+(base+22)+'" fill="transparent"></rect>' +
+      (path ? '<path class="bf'+(i===sel?'':' dim')+'" d="'+path+'"></path>' : '') +
+      (i === sel ? '<text class="val" x="'+(x+bw/2)+'" y="'+(y-8)+'" text-anchor="middle">'+money(v)+'</text>' : '') +
+      '<text class="'+(i===sel?'sel':'')+'" x="'+(x+bw/2)+'" y="'+(base+17)+'" text-anchor="middle" style="text-transform:capitalize">'+esc(lbl)+'</text></g>';
+  });
+  const ym = months[sel], yearTotal = S.payments.filter(p => p.date.slice(0,4) === String(now.getFullYear())).reduce((a,p) => a + (Number(p.amount)||0), 0);
+  return '<div class="card stack" style="gap:14px;padding:16px">' +
+    '<div class="row" style="justify-content:space-between;align-items:baseline"><div style="font-weight:700">Εισπράξεις ανά μήνα</div><div class="muted" style="font-size:12px">πάτα μια μπάρα</div></div>' +
+    '<svg class="chart" viewBox="0 0 '+W+' '+(base+24)+'" role="img" aria-label="Εισπράξεις των τελευταίων 6 μηνών">'+g+'</svg>' +
+    '<div class="muted" style="font-size:13px"><b style="color:var(--ink)">'+MONTH_NOM[Number(ym.slice(5))-1]+' '+ym.slice(0,4)+':</b> '+money(vals[sel])+' από '+counts[sel]+(counts[sel]===1?' πληρωμή':' πληρωμές')+'</div>' +
+    '<div class="stat3" style="border-top:1px solid var(--line);padding-top:12px"><div><div class="k">Μέσος όρος</div><div class="v num">'+money(avg)+'</div></div><div><div class="k">Φέτος</div><div class="v num">'+money(yearTotal)+'</div></div><div><div class="k">Μαθητές</div><div class="v num">'+S.students.length+'</div></div></div>' +
+    '</div>';
+}
+function lessonCard(l, isNext, compact){
+  const s = stu(l.studentId); if (!s) return '';
+  let chip = '';
+  if (l.status === 'done') chip = '<span class="chip ok">Έγινε</span>';
+  else if (l.status === 'cancelled') chip = '<span class="chip off">'+(l.pausedBy?'Παύση':'Ακυρώθηκε')+'</span>';
+  else if (isNext) chip = '<span class="chip next">Επόμενο</span>';
+  else if (owes(s) > 0) chip = '<span class="chip owe">Χρωστά ' + money(owes(s)) + '</span>';
+  const pkgTxt = s.pkg > 0 ? ' · ' + (creditLessons(s) > 0 ? 'μένουν ' + creditLessons(s) : 'τέλος πακέτου') : '';
+  const place = s.address ? (/online|zoom|skype|meet/i.test(s.address) ? 'Online' : s.address.split(',')[0]) : '';
+  return '<button class="card lcard'+(isNext?' is-next':'')+(l.status==='cancelled'?' is-off':'')+'" data-act="open-lesson" data-id="'+l.id+'">'+(compact?'':'<div class="lt"><div class="t num">'+esc(l.time)+'</div><div class="dur">60΄</div></div>')+av(s,40)+'<div class="who"><div class="name">'+esc(s.name)+'</div><div class="sub">'+esc(s.subject)+(place?' · '+esc(place):esc(pkgTxt))+'</div></div>'+chip+'</button>';
+}
+function av(s, size){ return '<div class="av" aria-hidden="true" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.36)+'px;border-radius:'+Math.round(size*0.34)+'px;background:'+esc(s.color)+'">'+esc(initials(s.name))+'</div>'; }
+function remindHours(){ const h = Number(S.remindHours); return h > 0 ? h : 2; }
+function hoursLabel(h){ return h < 1 ? Math.round(h*60) + ' λεπτά' : (h === 1 ? '1 ώρα' : h + ' ώρες'); }
+function lessonStart(l){ const [y,m,d] = l.date.split('-').map(Number); const [hh,mi] = l.time.split(':').map(Number); return new Date(y, m-1, d, hh||0, mi||0); }
+function untilText(ms){ const min = Math.max(0, Math.round(ms/60000)); if (min < 60) return 'σε ' + min + ' λεπτά'; const h = Math.floor(min/60), r = min % 60; return 'σε ' + h + (h===1?' ώρα':' ώρες') + (r ? ' και ' + r + "'" : ''); }
+function reminderBanner(){
+  const now = Date.now(), win = remindHours() * 3600000;
+  const soon = S.lessons.filter(l => l.status === 'scheduled').map(l => ({l, t:lessonStart(l).getTime()})).filter(x => x.t > now && x.t - now <= win).sort((a,b) => a.t - b.t);
+  if (!soon.length) return '';
+  return soon.map(({l, t}) => { const s = stu(l.studentId); if (!s) return '';
+    return '<div class="remind" role="status"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg><div style="min-width:0"><b>'+esc(s.name)+' · '+esc(l.time)+' ('+untilText(t - now)+')</b><div class="r-sub">'+esc(s.subject)+(s.address ? ' · ' + mapsLink(s.address) : '')+'</div></div></div>'; }).join('');
+}
+function gcalLink(l){
+  const s = stu(l.studentId); if (!s) return '#';
+  const st = lessonStart(l), en = new Date(st.getTime() + 60*60000);
+  const f = (d) => d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + 'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
+  const q = new URLSearchParams({action:'TEMPLATE', text:'Μάθημα: ' + s.name + ' (' + s.subject + ')', dates:f(st) + '/' + f(en), ctz:'Europe/Athens', details:'Από την εφαρμογή Ιδιαίτερα. Ειδοποίηση: ' + hoursLabel(remindHours()) + ' πριν.'});
+  if (s.address) q.set('location', s.address);
+  return 'https://calendar.google.com/calendar/render?' + q.toString();
+}
+function renderToday(){
+  const list = S.lessons.filter(l => l.date === UI.day).sort((a,b) => a.time.localeCompare(b.time));
+  const done = list.filter(l => l.status === 'done').length;
+  const nextId = (UI.day === today()) ? (list.find(l => l.status === 'scheduled') || {}).id : null;
+  const owed = totalOwed(), nOwe = S.students.filter(s => owes(s) > 0).length;
+  const isToday = UI.day === today();
+  return '<div class="wrap stack" style="gap:16px">' + demoBanner() + reminderBanner() + monthEndNudge() +
+    '<div class="stack" style="gap:4px"><div class="eyebrow">'+esc(longDate(UI.day))+'</div><div class="row" style="justify-content:space-between"><h1>'+(isToday?'Σήμερα':(UI.day===addDays(today(),1)?'Αύριο':(UI.day===addDays(today(),-1)?'Χθες':'Πρόγραμμα')))+'</h1>' +
+    '<div class="datebar"><button class="iconbtn" data-act="day" data-n="-7" aria-label="Προηγούμενη εβδομάδα"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>' +
+    (isToday?'':'<button class="btn sm" data-act="day" data-n="0">Σήμερα</button>') +
+    '<button class="iconbtn" data-act="day" data-n="7" aria-label="Επόμενη εβδομάδα"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button></div></div></div>' +
+    weekStrip() +
+    '<div class="summary paper"><div><div class="k">Μαθήματα</div><div class="v num">'+done+'/'+list.filter(l=>l.status!=='cancelled').length+'</div><div class="k">έγιναν</div></div>' +
+    '<div><div class="k">Έσοδα μέρας</div><div class="v num">'+money(list.filter(l=>l.status==='done').reduce((a,l)=>a+(Number(l.price)||0),0))+'</div><div class="k">από μαθήματα</div></div>' +
+    '<button class="owe" data-act="tab" data-k="owed"><div class="k">Σου χρωστούν</div><div class="v num">'+money(owed)+'</div><div class="k">'+nOwe+' '+(nOwe===1?'μαθητής':'μαθητές')+' ›</div></button></div>' +
+    '<div class="sec"><div class="label">Πρόγραμμα</div>'+(list.length?'<div class="muted" style="font-size:13px">'+list.length+' ραντεβού</div>':'')+'</div>' +
+    (list.length ? timeline(list, nextId) :
+      '<div class="empty card"><div>Δεν έχεις μαθήματα αυτή τη μέρα.</div>' + (S.students.length ? '<button class="btn soft" data-act="add-lesson">Πρόσθεσε μάθημα</button>' : '<button class="btn soft" data-act="new-student">Πρόσθεσε τον πρώτο μαθητή</button>') + '</div>') +
+    '</div>';
+}
+function renderCalendar(){
+  const [y, m] = UI.calMonth.split('-').map(Number);
+  const firstDay = new Date(y, m-1, 1);
+  const offset = (firstDay.getDay() + 6) % 7; // Monday first
+  const start = new Date(y, m-1, 1 - offset);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const cells = Math.ceil((offset + daysInMonth) / 7) * 7;
+  const byDay = {};
+  S.lessons.forEach(l => { if (l.status !== 'cancelled') (byDay[l.date] = byDay[l.date] || []).push(l); });
+  const t = today();
+  let html = '';
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const k = ymd(d), list = (byDay[k] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
+    const out = d.getMonth() !== m-1;
+    const dots = list.slice(0,4).map(l => '<i style="background:'+esc((stu(l.studentId)||{}).color || 'var(--muted)')+'"></i>').join('') + (list.length > 4 ? '<span class="more">+</span>' : '');
+    const lbl = d.toLocaleDateString('el-GR',{day:'numeric', month:'long'}) + (list.length ? ', ' + list.length + (list.length===1?' μάθημα':' μαθήματα') : '');
+    html += '<button data-act="cal-day" data-day="'+k+'" class="'+(out?'out ':'')+(k===t?'today':'')+'" aria-pressed="'+(k===UI.calSel)+'" aria-label="'+esc(lbl)+'"><span class="n num">'+d.getDate()+'</span><span class="dots">'+dots+'</span></button>';
+  }
+  const monthName = firstDay.toLocaleDateString('el-GR',{month:'long', year:'numeric'});
+  const sel = (byDay[UI.calSel] || []).slice().sort((a,b) => a.time.localeCompare(b.time));
+  const cancelled = S.lessons.filter(l => l.date === UI.calSel && l.status === 'cancelled');
+  const nextId = UI.calSel === t ? (sel.find(l => l.status === 'scheduled') || {}).id : null;
+  const monthLessons = S.lessons.filter(l => l.date.slice(0,7) === UI.calMonth && l.status !== 'cancelled');
+  const chev = (dir) => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="'+(dir<0?'M15 5l-7 7 7 7':'M9 5l7 7-7 7')+'"></path></svg>';
+  return '<div class="wrap stack" style="gap:16px">' + demoBanner() +
+    '<div class="stack" style="gap:4px"><div class="eyebrow">'+monthLessons.length+' '+(monthLessons.length===1?'μάθημα':'μαθήματα')+' τον μήνα</div><div class="row" style="justify-content:space-between"><h1 style="text-transform:capitalize;font-size:26px">'+esc(monthName)+'</h1>' +
+    '<div class="datebar"><button class="iconbtn" data-act="cal-month" data-n="-1" aria-label="Προηγούμενος μήνας">'+chev(-1)+'</button>' +
+    (UI.calMonth === t.slice(0,7) ? '' : '<button class="btn sm" data-act="cal-month" data-n="0">Σήμερα</button>') +
+    '<button class="iconbtn" data-act="cal-month" data-n="1" aria-label="Επόμενος μήνας">'+chev(1)+'</button></div></div></div>' +
+    '<div class="cal"><div class="wd">'+['Δε','Τρ','Τε','Πε','Πα','Σα','Κυ'].map(w => '<div>'+w+'</div>').join('')+'</div><div class="days">'+html+'</div></div>' +
+    '<div class="label" style="margin-top:4px;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink)">'+esc(longDate(UI.calSel))+'</div>' +
+    (sel.length || cancelled.length ? timeline(sel.concat(cancelled), nextId) :
+      '<div class="empty card"><div>Κανένα μάθημα αυτή τη μέρα.</div>' + (S.students.length ? '<button class="btn soft" data-act="add-lesson">Πρόσθεσε μάθημα</button>' : '<button class="btn soft" data-act="new-student">Πρόσθεσε τον πρώτο μαθητή</button>') + '</div>') +
+    '</div>';
+}
+function mapsLink(addr){
+  if (!addr || /online|zoom|skype|meet/i.test(addr)) return esc(addr || '');
+  return '<a class="addr" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr)+'">'+esc(addr)+'</a>';
+}
+function isPaused(s){ return !!(s.pausedUntil && s.pausedUntil > today()); }
+function norm(x){ return String(x || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function searchResults(){
+  const q = norm(UI.q).trim();
+  const all = S.students.slice().sort((a,b) => a.name.localeCompare(b.name,'el'));
+  if (!q) return all.length ? '<div class="stack">'+all.map(studentRow).join('')+'</div>' : '<div class="empty card"><div>Δεν έχεις ακόμη μαθητές.</div><button class="btn soft" data-act="new-student">Πρόσθεσε τον πρώτο μαθητή</button></div>';
+  const st = all.filter(s => norm([s.name, s.subject, s.grade, s.parentName, s.parentPhone, s.address, s.examName].join(' ')).includes(q));
+  const ls = S.lessons.filter(l => l.status === 'done' && norm([l.topic, l.note, l.nextHw].join(' ')).includes(q)).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time)).slice(0, 15);
+  if (!st.length && !ls.length) return '<div class="empty card">Δεν βρέθηκε τίποτα για «'+esc(UI.q)+'».</div>';
+  return (st.length ? '<div class="label">Μαθητές</div><div class="stack">'+st.map(studentRow).join('')+'</div>' : '') +
+    (ls.length ? '<div class="label" style="margin-top:8px">Μαθήματα</div><div class="card" style="padding:2px 14px">' + ls.map(l => { const s = stu(l.studentId); return '<button data-act="open-lesson" data-id="'+l.id+'" class="hist" style="width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left;font:inherit;color:inherit"><div class="d">'+esc(shortDate(l.date))+'</div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><div style="font-weight:700">'+esc(l.topic || 'Μάθημα')+'</div><div class="muted" style="font-size:13px">'+esc(s ? s.name : '')+(l.note ? ' · ' + esc(l.note) : '')+'</div></div></button>'; }).join('') + '</div>' : '');
+}
+function syllabusCard(s){
+  const sy = s.syllabus || [], dn = sy.filter(x => x.done).length, pct = sy.length ? Math.round(dn / sy.length * 100) : 0;
+  return '<div class="card stack" style="gap:10px"><div class="row" style="justify-content:space-between;align-items:baseline"><div style="font-weight:700">Ύλη</div>' + (sy.length ? '<div class="muted num" style="font-size:13px">'+dn+'/'+sy.length+' · '+pct+'%</div>' : '') + '</div>' +
+    (sy.length ? '<div class="bar"><i style="width:'+pct+'%;background:var(--ok)"></i></div><div>' + sy.map(x => '<div class="syl'+(x.done?' done':'')+'"><label><input type="checkbox" data-syl="'+x.id+'" data-sid="'+s.id+'"'+(x.done?' checked':'')+'><span>'+esc(x.title)+'</span></label><button class="xbtn" aria-label="Αφαίρεση ενότητας" data-act="del-syl" data-id="'+s.id+'" data-xid="'+x.id+'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>').join('') + '</div>'
+      : '<div class="muted" style="font-size:14px;line-height:1.5">Γράψε τα κεφάλαια της ύλης και τσέκαρε όσα καλύπτετε. Μπορείς να επικολλήσεις πολλά μαζί, ένα σε κάθε γραμμή.</div>') +
+    '<form data-form="syl" data-id="'+s.id+'" class="stack" style="gap:8px">' + (sy.length ? '<div class="addrow"><input id="syl-new" name="title" placeholder="Νέα ενότητα" aria-label="Νέα ενότητα">'+mic('syl-new')+'<button class="btn sm soft" type="submit">Προσθήκη</button></div>'
+      : '<div class="row" style="justify-content:flex-end">'+mic('syl-bulk')+'</div><textarea id="syl-bulk" name="title" aria-label="Ενότητες, μία ανά γραμμή" style="min-height:110px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);line-height:1.5" placeholder="Κεφ. 1 Συναρτήσεις&#10;Κεφ. 2 Όρια&#10;Κεφ. 3 Συνέχεια"></textarea><button class="btn sm soft" type="submit">Προσθήκη ύλης</button>') + '</form></div>';
+}
+function sheetPause(sid){
+  const s = stu(sid); if (!s) return null;
+  const n = (until) => S.lessons.filter(l => l.studentId === sid && l.status === 'scheduled' && l.date >= today() && l.date < until).length;
+  const def = addDays(today(), 14);
+  return '<div class="wrap stack" style="gap:16px">' + head('Παύση μαθημάτων', s.name) +
+    '<div class="muted" style="font-size:14px;line-height:1.5">Για διακοπές, εξεταστική ή ασθένεια. Τα προγραμματισμένα μαθήματα μέχρι τότε μπαίνουν σε παύση και δεν χρεώνονται. Τίποτα δεν σβήνεται: με την επανέναρξη επιστρέφουν.</div>' +
+    '<form class="stack" style="gap:16px" data-form="pause" data-id="'+sid+'">' +
+    '<label class="field"><span>Ξαναρχίζουμε στις</span><input type="date" id="ps-until" name="until" min="'+addDays(today(),1)+'" value="'+def+'" required></label>' +
+    '<div class="muted" style="font-size:13px">Με αυτή την ημερομηνία μπαίνουν σε παύση '+n(def)+' μαθήματα.</div>' +
+    '<label class="check"><input type="checkbox" id="ps-notify" name="notify" checked> Ετοίμασε μήνυμα για τον γονιό</label>' +
+    '<button class="btn primary block" type="submit">Παύση</button></form></div>';
+}
+function studentRow(s){
+  const o = owes(s), c = creditLessons(s);
+  const chip = isPaused(s) ? '<span class="chip off">Παύση έως '+esc(shortDate(s.pausedUntil))+'</span>' : o > 0 ? '<span class="chip owe">Χρωστά '+money(o)+'</span>' : (s.pkg > 0 ? '<span class="chip ok">'+(c>0?'Μένουν '+c:'Ανανέωση')+'</span>' : '<span class="chip ok">Εξοφλημένος</span>');
+  return '<button class="card" data-act="open-student" data-id="'+s.id+'"><div class="row">'+av(s,44)+'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px">'+esc(s.name)+'</div><div class="muted" style="font-size:13px">'+esc(s.subject)+(s.grade?' '+esc(s.grade):'')+' · '+money(s.price)+'/μάθημα</div></div>'+chip+'</div></button>';
+}
+function renderStudents(){
+  const list = S.students.slice().sort((a,b) => a.name.localeCompare(b.name,'el'));
+  return '<div class="wrap stack" style="gap:16px">' + demoBanner() + '<div class="stack" style="gap:4px"><div class="eyebrow">'+list.length+' '+(list.length===1?'μαθητής':'μαθητές')+'</div><div class="row" style="justify-content:space-between"><h1>Μαθητές</h1>'+(list.length?'<button class="btn sm soft" data-act="reports">Αναφορές μήνα</button>':'')+'</div></div>' +
+    (list.length ? '<label class="search sticky"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg><input id="q" type="search" autocomplete="off" aria-label="Αναζήτηση" placeholder="Μαθητής, θέμα μαθήματος, τηλέφωνο…" value="'+esc(UI.q || '')+'">'+mic('q')+'</label>' : '') +
+    '<div id="qres" class="stack">' + searchResults() + '</div></div>';
+}
+function renderOwed(){
+  const owing = S.students.filter(s => owes(s) > 0).sort((a,b) => owes(b) - owes(a));
+  const ok = S.students.filter(s => owes(s) === 0);
+  const month = MONTH_NOM[new Date().getMonth()] + ' ' + new Date().getFullYear();
+  const owingCards = owing.map(s => '<div class="card stack" style="gap:12px"><div class="row" style="justify-content:space-between;align-items:center">'+av(s,40)+'<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:16px">'+esc(s.name)+'</div><div class="muted" style="font-size:13px">'+(s.price>0?Math.round(owes(s)/s.price)+' μαθήματα · ':'')+money(s.price)+'/μάθημα</div></div><div class="num" style="font-size:20px;font-weight:800;color:var(--owe)">'+money(owes(s))+'</div></div>' +
+    '<div class="grid2"><button class="btn sm" data-act="remind" data-id="'+s.id+'">Υπενθύμιση</button><button class="btn sm good" data-act="pay" data-id="'+s.id+'">Πληρώθηκα</button></div></div>').join('');
+  const okCards = ok.map(s => { const c = creditLessons(s); return '<button class="card" data-act="open-student" data-id="'+s.id+'"><div class="row" style="justify-content:space-between"><div style="min-width:0"><div style="font-weight:700;font-size:16px">'+esc(s.name)+'</div><div class="muted" style="font-size:13px">'+(c>0?'Προπληρωμένα: '+c+' μαθήματα':'Εξοφλημένος')+'</div></div><span class="chip ok">'+(balance(s)>0?'+'+money(balance(s)):'0€')+'</span></div></button>'; }).join('');
+  return '<div class="wrap stack" style="gap:16px">' + demoBanner() + '<div class="stack" style="gap:4px"><div class="eyebrow" style="text-transform:capitalize">'+esc(month)+'</div><h1>Έσοδα</h1></div>' +
+    '<div class="hero paper"><div><div class="k">Σου χρωστούν</div><div class="v num" style="color:var(--hero-owe)">'+money(totalOwed())+'</div></div><div><div class="k">Εισπράχθηκαν τον μήνα</div><div class="v num">'+money(collectedThisMonth())+'</div></div></div>' +
+    revenueChart() +
+    '<div class="sec"><div class="label">Οφειλές</div></div>' +
+    '<div class="tabs2" role="group" aria-label="Φίλτρο"><button data-act="owed-tab" data-k="owe" aria-pressed="'+(UI.owedTab==='owe')+'">Χρωστούν ('+owing.length+')</button><button data-act="owed-tab" data-k="ok" aria-pressed="'+(UI.owedTab==='ok')+'">Εξοφλημένοι ('+ok.length+')</button></div>' +
+    '<div class="stack">' + (UI.owedTab === 'owe' ? (owingCards || '<div class="empty card">Κανείς δεν σου χρωστάει. Ωραία!</div>') : (okCards || '<div class="empty card">Κανένας ακόμη.</div>')) + '</div></div>';
+}
+function renderSettings(){
+  return '<div class="wrap stack" style="gap:18px"><h1>Ρυθμίσεις</h1>' +
+    '<form class="card stack" data-form="teacher"><label class="field"><span>Υπογραφή στα μηνύματα</span><input id="teacher" name="teacher" placeholder="π.χ. Χρήστος, Μαθηματικός" value="'+esc(S.teacher)+'"></label><button class="btn soft" type="submit">Αποθήκευση</button></form>' +
+    '<form class="card stack" data-form="remind"><label class="field"><span>Υπενθύμιση πριν από κάθε μάθημα</span><select id="remindHours" name="remindHours">' +
+      [0.5,1,2,3,4,6,12,24].map(h => '<option value="'+h+'"'+(remindHours()===h?' selected':'')+'>'+hoursLabel(h)+' πριν</option>').join('') + '</select></label>' +
+      '<div class="muted" style="font-size:13px;line-height:1.5">Όταν ανοίγεις την εφαρμογή, βλέπεις στην κορυφή του «Σήμερα» τα μαθήματα που πλησιάζουν. Για ειδοποίηση με κλειστή την εφαρμογή, πάτα σε ένα μάθημα «Προσθήκη στο Google Calendar» και βάλε εκεί την ίδια ειδοποίηση.</div>' +
+      '<button class="btn soft" type="submit">Αποθήκευση</button></form>' +
+    '<div class="card stack"><div style="font-weight:700">Πού αποθηκεύονται τα δεδομένα</div><div class="muted" style="line-height:1.5">Μόνο σε αυτή τη συσκευή, σε αυτόν τον browser. Αν καθαρίσεις τα δεδομένα του browser ή αλλάξεις κινητό, χάνονται. Κράτα αντίγραφο ασφαλείας πού και πού.</div>' +
+    '<button class="btn" data-act="backup">Αντιγραφή αντιγράφου ασφαλείας</button></div>' +
+    '<form class="card stack" data-form="restore"><label class="field"><span>Επαναφορά από αντίγραφο</span><textarea id="restore" name="restore" placeholder="Επικόλλησε εδώ το αντίγραφο"></textarea></label><button class="btn" type="submit">Επαναφορά</button></form>' +
+    '<div class="card stack"><div style="font-weight:700">Παραδείγματα</div><button class="btn" data-act="load-demo">Φόρτωσε ξανά τα παραδείγματα</button>' +
+    (UI.confirmWipe ? '<div class="muted">Θα σβηστούν όλοι οι μαθητές, τα μαθήματα και οι πληρωμές. Σίγουρα;</div><div class="grid2"><button class="btn" data-act="wipe-cancel">Όχι</button><button class="btn danger" data-act="wipe-yes">Ναι, διαγραφή</button></div>' : '<button class="btn danger" data-act="wipe">Διαγραφή όλων</button>') +
+    '</div></div>';
+}
+function render(){
+  renderTabs();
+  const m = $('#main');
+  m.innerHTML = UI.tab === 'today' ? renderToday() : UI.tab === 'calendar' ? renderCalendar() : UI.tab === 'students' ? renderStudents() : UI.tab === 'owed' ? renderOwed() : renderSettings();
+  renderSheet();
+}
+
+/* ---------- sheets ---------- */
+function head(title, sub){ return '<div class="sheethead"><button class="back" data-act="close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>Πίσω</button></div><div class="stack" style="gap:2px"><h2>'+esc(title)+'</h2>'+(sub?'<div class="muted">'+esc(sub)+'</div>':'')+'</div>'; }
+function seg(name, opts, val){ return '<div class="seg" role="radiogroup">' + opts.map(([v,l]) => { const id = name+'-'+v; return '<input type="radio" id="'+id+'" name="'+name+'" value="'+v+'"'+(val===v?' checked':'')+'><label for="'+id+'">'+l+'</label>'; }).join('') + '</div>'; }
+
+function sheetLesson(id){
+  const l = S.lessons.find(x => x.id === id); if (!l) return null;
+  const s = stu(l.studentId); if (!s) return null;
+  const top = head(s.name, longDate(l.date) + ' · ' + l.time) + (s.address ? '<div class="row" style="gap:6px;font-size:14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;color:var(--muted)"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span style="min-width:0">'+mapsLink(s.address)+'</span></div>' : '');
+  if (l.status === 'done' && !UI.edit) {
+    return '<div class="wrap stack" style="gap:16px">' + top +
+      '<div class="card stack" style="gap:8px"><span class="chip ok" style="align-self:flex-start">Ολοκληρώθηκε</span><div style="font-weight:700">'+esc(l.topic || 'Χωρίς θέμα')+'</div>' +
+      (l.focus?'<div class="muted">Συγκέντρωση: '+({good:'Καλή',mid:'Μέτρια',low:'Χαμηλή'}[l.focus])+'</div>':'') + (l.hw?'<div class="muted">Εργασία: '+(l.hw==='yes'?'Έγινε':'Δεν έγινε')+'</div>':'') +
+      (l.nextHw?'<div class="muted">Για την επόμενη: '+esc(l.nextHw)+'</div>':'') + (l.note?'<div class="muted">'+esc(l.note)+'</div>':'') + '</div>' +
+      '<button class="btn primary block" data-act="parent-msg" data-id="'+l.id+'">Ενημέρωση γονιού</button>' +
+      '<div class="grid2"><button class="btn" data-act="edit-lesson" data-id="'+l.id+'">Επεξεργασία</button><button class="btn" data-act="undo-done" data-id="'+l.id+'">Δεν έγινε τελικά</button></div>' +
+      '<button class="btn" data-act="open-student" data-id="'+s.id+'">Καρτέλα μαθητή</button></div>';
+  }
+  return '<div class="wrap stack" style="gap:16px">' + top +
+    (l.status === 'cancelled' ? '<span class="chip off" style="align-self:flex-start">Ακυρώθηκε</span>' : '') +
+    (l.status === 'scheduled' && !UI.edit ? prepCard(l) : '') +
+    '<form class="stack" style="gap:16px" data-form="complete" data-id="'+l.id+'">' +
+    '<label class="field"><span class="flab">Τι κάνατε'+mic('topic')+'</span><input id="topic" name="topic" value="'+esc(l.topic)+'" placeholder="π.χ. Όρια συναρτήσεων, Κεφ. 2"></label>' +
+    '<div class="field"><span>Συγκέντρωση</span>'+seg('focus',[['good','Καλή'],['mid','Μέτρια'],['low','Χαμηλή']], l.focus || 'good')+'</div>' +
+    '<div class="field"><span>Εργασία από την προηγούμενη</span>'+seg('hw',[['yes','Έγινε'],['no','Όχι'],['none','Δεν είχε']], l.hw || 'yes')+'</div>' +
+    '<label class="field"><span class="flab">Εργασία για την επόμενη φορά'+mic('nextHw')+'</span><input id="nextHw" name="nextHw" value="'+esc(l.nextHw)+'" placeholder="π.χ. Ασκήσεις 4–9, σελ. 58"></label>' +
+    '<label class="field"><span class="flab">Σημείωση για σένα (δεν πάει στον γονιό)'+mic('note')+'</span><textarea id="note" name="note" placeholder="π.χ. θέλει εξάσκηση στις πλάγιες κρούσεις">'+esc(l.note)+'</textarea></label>' +
+    '<button class="btn primary block" type="submit">'+(UI.edit?'Αποθήκευση':'Ολοκληρώθηκε το μάθημα')+'</button></form>' +
+    (UI.edit || l.status !== 'scheduled' ? '' : '<div class="grid2"><button class="btn soft" data-act="move-lesson" data-id="'+l.id+'">Αλλαγή μέρας/ώρας</button><a class="btn soft" target="_blank" rel="noopener" href="'+esc(gcalLink(l))+'">Google Calendar</a></div>') +
+    (UI.edit ? '' : '<div class="grid2">' + (l.status === 'cancelled' ? '<button class="btn" data-act="uncancel" data-id="'+l.id+'">Επαναφορά</button>' : '<button class="btn" data-act="cancel-lesson" data-id="'+l.id+'">Ακύρωση</button>') + '<button class="btn danger" data-act="delete-lesson" data-id="'+l.id+'">Διαγραφή</button></div>') +
+    '</div>';
+}
+function sheetMessage(text, s, title){
+  const phone = (s && s.parentPhone || '').replace(/[^\d+]/g,'');
+  return '<div class="wrap stack" style="gap:16px">' + head(title || 'Ενημέρωση γονιού', s ? (s.parentName || 'Γονιός') + (phone ? ' · ' + s.parentPhone : '') : '') +
+    '<div class="field"><div class="row" style="justify-content:space-between"><label for="msgtext" style="font-size:13px;font-weight:700;color:var(--muted)">Μήνυμα (μπορείς να το αλλάξεις)</label>'+mic('msgtext')+'</div><textarea class="msg" id="msgtext">'+esc(text)+'</textarea></div>' +
+    '<button class="btn primary block" data-act="copy-msg">Αντιγραφή μηνύματος</button>' +
+    '<div class="grid2"><a class="btn" id="viber-link" href="viber://forward?text='+encodeURIComponent(text)+'">Άνοιγμα Viber</a>' +
+    (phone ? '<a class="btn" id="sms-link" href="sms:'+esc(phone)+'?body='+encodeURIComponent(text)+'">SMS</a>' : '<button class="btn" data-act="open-student" data-id="'+(s?s.id:'')+'">Πρόσθεσε τηλέφωνο</button>') + '</div>' +
+    '<div class="muted" style="font-size:13px;line-height:1.5">Αν το Viber δεν ανοίξει, πάτα «Αντιγραφή» και επικόλλησε το μήνυμα στη συνομιλία με τον γονιό.</div></div>';
+}
+function sheetMove(id){
+  const l = S.lessons.find(x => x.id === id); if (!l) return null;
+  const s = stu(l.studentId); if (!s) return null;
+  return '<div class="wrap stack" style="gap:16px">' + head('Αλλαγή μέρας/ώρας', s.name + ' · τώρα: ' + longDate(l.date) + ', ' + l.time) +
+    '<form class="stack" style="gap:16px" data-form="move" data-id="'+l.id+'">' +
+    '<div class="grid2"><label class="field"><span>Νέα ημερομηνία</span><input type="date" id="mv-date" name="date" value="'+l.date+'" required></label><label class="field"><span>Νέα ώρα</span><input type="time" id="mv-time" name="time" value="'+l.time+'" required></label></div>' +
+    '<label class="check"><input type="checkbox" id="mv-notify" name="notify" checked> Ετοίμασε μήνυμα για τον γονιό</label>' +
+    '<button class="btn primary block" type="submit">Μεταφορά μαθήματος</button></form></div>';
+}
+function sheetTest(sid){
+  const s = stu(sid); if (!s) return null;
+  const last = (s.tests || []).slice(-1)[0];
+  return '<div class="wrap stack" style="gap:16px">' + head('Νέο διαγώνισμα', s.name) +
+    '<form class="stack" style="gap:16px" data-form="test" data-id="'+sid+'">' +
+    '<label class="field"><span class="flab">Θέμα'+mic('ts-title')+'</span><input id="ts-title" name="title" required placeholder="π.χ. Ορμή και κρούσεις"></label>' +
+    '<label class="field"><span>Ημερομηνία</span><input type="date" id="ts-date" name="date" value="'+today()+'" required></label>' +
+    '<div class="grid2"><label class="field"><span>Βαθμός</span><input type="number" inputmode="decimal" step="0.5" min="0" id="ts-score" name="score" required></label><label class="field"><span>Με άριστα</span><input type="number" inputmode="decimal" min="1" step="1" id="ts-max" name="max" required value="'+(last ? last.max : 20)+'"></label></div>' +
+    '<button class="btn primary block" type="submit">Αποθήκευση</button></form></div>';
+}
+function testsCard(s){
+  const tests = (s.tests || []).slice().sort((a,b) => a.date.localeCompare(b.date));
+  let chart = '';
+  if (tests.length >= 2) {
+    const W = 300, H = 96, pl = 6, pr = 40, pt = 12, pb = 10, pw = W - pl - pr, ph = H - pt - pb;
+    const pts = tests.map((x, i) => [pl + (tests.length === 1 ? pw/2 : i * pw / (tests.length - 1)), pt + ph - (Math.min(100, x.score / x.max * 100) / 100) * ph]);
+    const lastP = Math.round(tests[tests.length-1].score / tests[tests.length-1].max * 100);
+    chart = '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Πορεία βαθμών">' +
+      '<line class="gl" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+pt+'" y2="'+pt+'"></line><line class="gl" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+(pt+ph/2)+'" y2="'+(pt+ph/2)+'"></line><line class="gl" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+(pt+ph)+'" y2="'+(pt+ph)+'"></line>' +
+      '<text x="'+(W-pr+6)+'" y="'+(pt+4)+'">100%</text><text x="'+(W-pr+6)+'" y="'+(pt+ph/2+4)+'">50%</text>' +
+      '<polyline class="ln" points="'+pts.map(p => p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'"></polyline>' +
+      pts.map(p => '<circle class="pt" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4.5"></circle>').join('') +
+      '<text class="val" x="'+(pts[pts.length-1][0]-9).toFixed(1)+'" y="'+(pts[pts.length-1][1] > pt + 14 ? pts[pts.length-1][1]-9 : pts[pts.length-1][1]+18).toFixed(1)+'" text-anchor="end">'+lastP+'%</text></svg>';
+  }
+  const first = tests[0], last = tests[tests.length-1];
+  const diff = tests.length >= 2 ? Math.round(last.score/last.max*100) - Math.round(first.score/first.max*100) : 0;
+  return '<div class="card stack" style="gap:10px"><div class="row" style="justify-content:space-between"><div><div style="font-weight:700">Διαγωνίσματα</div>' +
+    (tests.length >= 2 ? '<div class="muted" style="font-size:13px">'+(diff > 0 ? '+' + diff + ' μονάδες από το πρώτο' : diff < 0 ? diff + ' μονάδες από το πρώτο' : 'Σταθερή πορεία')+'</div>' : '') +
+    '</div><button class="btn sm soft" data-act="add-test" data-id="'+s.id+'">+ Βαθμός</button></div>' + chart +
+    (tests.length ? '<div>' + tests.slice().reverse().map(x => '<div class="trow"><div style="flex:1;min-width:0"><div style="font-weight:600">'+esc(x.title)+'</div><div class="muted" style="font-size:12px">'+esc(shortDate(x.date))+'</div></div><div class="sc num">'+esc(x.score)+'/'+esc(x.max)+'</div><button class="xbtn" aria-label="Διαγραφή βαθμού" data-act="del-test" data-id="'+s.id+'" data-tid="'+x.id+'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>').join('') + '</div>'
+      : '<div class="muted" style="font-size:14px">Κατέγραψε βαθμούς για να βλέπεις την πρόοδο και να μπαίνουν στην αναφορά μήνα.</div>') + '</div>';
+}
+function countdownCard(s){
+  if (!s.examDate) return '';
+  const days = Math.round((parseYmd(s.examDate) - parseYmd(today())) / 86400000);
+  if (days < 0) return '';
+  const weeks = Math.ceil(days / 7);
+  const recent = S.lessons.filter(l => l.studentId === s.id && l.status === 'done' && l.date >= addDays(today(), -28)).length;
+  const perWeek = Math.max(1, Math.round(recent / 4));
+  return '<div class="count paper"><div class="big num">'+(days < 14 ? days : weeks)+'</div><div style="min-width:0"><div style="font-weight:700">'+(days < 14 ? (days === 1 ? 'μέρα' : 'μέρες') : 'εβδομάδες')+' μέχρι '+(s.examName ? 'τις ' + esc(s.examName) : 'τις εξετάσεις')+'</div><div class="k">'+esc(longDate(s.examDate))+' · περίπου '+(weeks*perWeek)+' μαθήματα ακόμη</div></div></div>';
+}
+function sheetAddLesson(){
+  if (!S.students.length) return '<div class="wrap stack" style="gap:16px">'+head('Νέο μάθημα')+'<div class="empty card"><div>Πρόσθεσε πρώτα έναν μαθητή.</div><button class="btn soft" data-act="new-student">Νέος μαθητής</button></div></div>';
+  const pre = UI.preStudent || '';
+  return '<div class="wrap stack" style="gap:16px">' + head('Νέο μάθημα') + '<form class="stack" style="gap:16px" data-form="add-lesson">' +
+    (() => { const sorted = S.students.slice().sort((a,b)=>a.name.localeCompare(b.name,'el')); const sel = pre || (sorted[0] || {}).id;
+      return '<div class="field"><span>Μαθητής</span>' +
+        (sorted.length > 4 ? '<label class="search" style="box-shadow:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg><input id="al-q" type="search" autocomplete="off" aria-label="Αναζήτηση μαθητή" placeholder="Αναζήτηση μαθητή…"></label>' : '') +
+        '<div class="picker" role="radiogroup" aria-label="Μαθητής">' + sorted.map(s => '<label class="opt" data-k="'+esc(norm(s.name+' '+s.subject+' '+s.grade))+'"><input type="radio" name="studentId" value="'+s.id+'"'+(s.id===sel?' checked':'')+' required>'+av(s,36)+'<div style="min-width:0"><div style="font-weight:700">'+esc(s.name)+'</div><div class="muted" style="font-size:13px">'+esc(s.subject)+(s.grade?' '+esc(s.grade):'')+'</div></div><svg class="tick" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></label>').join('') +
+        '<div class="muted" id="al-none" style="padding:14px" hidden>Κανένας μαθητής με αυτό το όνομα.</div></div></div>'; })() +
+    '<div class="grid2"><label class="field"><span>Ημερομηνία</span><input type="date" id="al-date" name="date" value="'+UI.day+'" required></label><label class="field"><span>Ώρα</span><input type="time" id="al-time" name="time" value="17:00" required></label></div>' +
+    '<label class="field"><span>Επανάληψη</span><select id="al-rep" name="rep"><option value="1">Μόνο μία φορά</option><option value="4">Κάθε εβδομάδα, για 4 εβδομάδες</option><option value="8">Κάθε εβδομάδα, για 8 εβδομάδες</option><option value="16">Κάθε εβδομάδα, για 16 εβδομάδες</option></select></label>' +
+    '<button class="btn primary block" type="submit">Προσθήκη</button></form></div>';
+}
+function sheetStudentForm(id){
+  const s = id ? stu(id) : {name:'', g:'m', subject:'', grade:'', parentName:'', parentPhone:'', address:'', examName:'', examDate:'', price:20, pkg:0};
+  return '<div class="wrap stack" style="gap:16px">' + head(id ? 'Επεξεργασία μαθητή' : 'Νέος μαθητής') + '<form class="stack" style="gap:14px" data-form="student" data-id="'+(id||'')+'">' +
+    '<label class="field"><span>Ονοματεπώνυμο</span><input id="sf-name" name="name" required value="'+esc(s.name)+'" placeholder="π.χ. Μαρία Κωνσταντίνου"></label>' +
+    '<div class="field"><span>Αγόρι ή κορίτσι (για σωστά ελληνικά στα μηνύματα)</span>'+seg('g',[['m','Αγόρι'],['f','Κορίτσι']], s.g || 'm')+'</div>' +
+    '<div class="grid2"><label class="field"><span>Μάθημα</span><input id="sf-subject" name="subject" required value="'+esc(s.subject)+'" placeholder="π.χ. Φυσική"></label><label class="field"><span>Τάξη</span><input id="sf-grade" name="grade" value="'+esc(s.grade)+'" placeholder="π.χ. Β\' Λυκείου"></label></div>' +
+    '<div class="grid2"><label class="field"><span>Τιμή ανά μάθημα (€)</span><input id="sf-price" name="price" type="number" inputmode="decimal" min="0" step="1" required value="'+esc(s.price)+'"></label><label class="field"><span>Πακέτο</span><select id="sf-pkg" name="pkg">'+[[0,'Πληρωμή ανά μάθημα'],[4,'Πακέτο 4'],[8,'Πακέτο 8'],[10,'Πακέτο 10'],[12,'Πακέτο 12']].map(([v,l]) => '<option value="'+v+'"'+(Number(s.pkg)===v?' selected':'')+'>'+l+'</option>').join('')+'</select></label></div>' +
+    '<label class="field"><span class="flab">Διεύθυνση μαθήματος'+mic('sf-address')+'</span><input id="sf-address" name="address" autocomplete="street-address" value="'+esc(s.address)+'" placeholder="π.χ. Τσιμισκή 45, 3ος όροφος ή Online"></label>' +
+    '<label class="field"><span>Γονιός (όπως θα τον προσφωνείς)</span><input id="sf-parent" name="parentName" value="'+esc(s.parentName)+'" placeholder="π.χ. κα Κωνσταντίνου"></label>' +
+    '<label class="field"><span>Κινητό γονιού</span><input id="sf-phone" name="parentPhone" type="tel" inputmode="tel" value="'+esc(s.parentPhone)+'" placeholder="69XXXXXXXX"></label>' +
+    '<div class="grid2"><label class="field"><span>Εξετάσεις (προαιρετικό)</span><input id="sf-exam" name="examName" value="'+esc(s.examName)+'" placeholder="π.χ. Πανελλαδικές"></label><label class="field"><span>Ημερομηνία</span><input type="date" id="sf-examdate" name="examDate" value="'+esc(s.examDate)+'"></label></div>' +
+    '<button class="btn primary block" type="submit">'+(id?'Αποθήκευση':'Προσθήκη μαθητή')+'</button>' +
+    (id ? (UI.confirmDel ? '<div class="muted">Θα σβηστούν και τα μαθήματα και οι πληρωμές του. Σίγουρα;</div><div class="grid2"><button class="btn" type="button" data-act="del-student-no">Όχι</button><button class="btn danger" type="button" data-act="del-student-yes" data-id="'+id+'">Ναι, διαγραφή</button></div>' : '<button class="btn danger" type="button" data-act="del-student" data-id="'+id+'">Διαγραφή μαθητή</button>') : '') +
+    '</form></div>';
+}
+function sheetStudent(id){
+  const s = stu(id); if (!s) return null;
+  const o = owes(s), c = creditLessons(s), bal = balance(s);
+  const done = S.lessons.filter(l => l.studentId === id && l.status === 'done').sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  const upcoming = S.lessons.filter(l => l.studentId === id && l.status === 'scheduled' && l.date >= today()).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  let money1;
+  if (s.pkg > 0) {
+    const used = c > 0 ? s.pkg - c : s.pkg; const pct = Math.max(0, Math.min(100, used / s.pkg * 100));
+    money1 = '<div class="card stack"><div class="row" style="justify-content:space-between"><div style="font-weight:700">Πακέτο '+s.pkg+' μαθημάτων</div>'+(o>0?'<span class="chip owe">Χρωστά '+money(o)+'</span>':(c>0?'<span class="chip ok">Μένουν '+c+'</span>':'<span class="chip owe">Για ανανέωση</span>'))+'</div><div class="bar"><i style="width:'+pct+'%"></i></div><div class="muted" style="font-size:13px">'+(c>0?(s.pkg-c)+' έγιναν · μένουν '+c:'Ανανέωση: '+money(s.pkg*s.price))+'</div>' +
+      '<button class="btn soft" data-act="pay" data-id="'+id+'" data-amt="'+(o>0?o:s.pkg*s.price)+'">'+(o>0?'Καταγραφή πληρωμής':'Πληρωμή νέου πακέτου')+'</button></div>';
+  } else {
+    money1 = '<div class="card stack"><div class="row" style="justify-content:space-between"><div style="font-weight:700">'+money(s.price)+' ανά μάθημα</div>'+(o>0?'<span class="chip owe">Χρωστά '+money(o)+'</span>':'<span class="chip ok">'+(bal>0?'Προπληρωμή '+money(bal):'Εξοφλημένος')+'</span>')+'</div>' +
+      '<button class="btn soft" data-act="pay" data-id="'+id+'">Καταγραφή πληρωμής</button></div>';
+  }
+  return '<div class="wrap stack" style="gap:16px"><div class="sheethead"><button class="back" data-act="close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>Πίσω</button><span style="flex:1"></span><button class="btn sm" data-act="edit-student" data-id="'+id+'">Επεξεργασία</button></div>' +
+    '<div class="row" style="gap:14px"><div class="avatar" style="background:'+esc(s.color)+'">'+esc(initials(s.name))+'</div><div style="min-width:0"><h2>'+esc(s.name)+'</h2><div class="muted">'+esc(s.subject)+(s.grade?' '+esc(s.grade):'')+'</div></div></div>' +
+    (isPaused(s) ? '<div class="pausebar"><div style="min-width:0"><div style="font-weight:700">Σε παύση</div><div style="font-size:13px">Ξαναρχίζει '+esc(longDate(s.pausedUntil))+'</div></div><button class="btn sm" data-act="resume" data-id="'+id+'">Επανέναρξη τώρα</button></div>' : '') +
+    countdownCard(s) + money1 + syllabusCard(s) + testsCard(s) +
+    '<div class="card stack" style="gap:2px"><div class="muted" style="font-size:13px">Διεύθυνση</div><div style="font-weight:600;line-height:1.4">'+(s.address ? mapsLink(s.address) : '<span class="muted">Δεν έχει οριστεί</span>')+'</div></div>' +
+    '<div class="card row" style="justify-content:space-between"><div style="min-width:0"><div class="muted" style="font-size:13px">Γονιός</div><div style="font-weight:700">'+esc(s.parentName || '—')+'</div><div class="muted num" style="font-size:13px">'+esc(s.parentPhone || 'Χωρίς τηλέφωνο')+'</div></div>'+(o>0?'<button class="btn sm soft" data-act="remind" data-id="'+id+'">Υπενθύμιση</button>':'')+'</div>' +
+    '<button class="btn primary block" data-act="report" data-id="'+id+'">Αναφορά μήνα για τον γονιό</button>' +
+    '<div class="grid2"><button class="btn" data-act="add-lesson" data-sid="'+id+'">Νέο μάθημα</button><button class="btn" data-act="tab-day" data-day="'+(upcoming[0]?upcoming[0].date:today())+'">'+(upcoming[0]?'Επόμενο: '+esc(shortDate(upcoming[0].date)):'Πρόγραμμα')+'</button></div>' +
+    (isPaused(s) ? '' : '<button class="btn block" data-act="pause" data-id="'+id+'">Παύση μαθημάτων (διακοπές, εξεταστική…)</button>') +
+    '<div class="label" style="margin-top:4px">Πρόοδος</div>' +
+    (done.length ? '<div class="card" style="padding:2px 14px">' + done.slice(0,20).map(l => '<button data-act="open-lesson" data-id="'+l.id+'" class="hist" style="width:100%;background:none;border-left:none;border-right:none;border-top:none;text-align:left;font:inherit;color:inherit"><div class="d">'+esc(shortDate(l.date))+'</div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><div style="font-weight:700">'+esc(l.topic || 'Μάθημα')+'</div>'+(l.note?'<div class="muted" style="font-size:13px;line-height:1.45">'+esc(l.note)+'</div>':'')+'</div></button>').join('') + '</div>' : '<div class="empty card">Δεν υπάρχουν ακόμη ολοκληρωμένα μαθήματα.</div>') +
+    '</div>';
+}
+function sheetPay(id, amt){
+  const s = stu(id); if (!s) return null;
+  const def = amt != null ? amt : (owes(s) || (s.pkg > 0 ? s.pkg * s.price : s.price));
+  return '<div class="wrap stack" style="gap:16px">' + head('Καταγραφή πληρωμής', s.name) + '<form class="stack" style="gap:16px" data-form="pay" data-id="'+id+'">' +
+    '<label class="field"><span>Ποσό (€)</span><input id="pay-amt" name="amount" type="number" inputmode="decimal" min="1" step="1" required value="'+esc(def)+'"></label>' +
+    '<label class="field"><span>Ημερομηνία</span><input id="pay-date" name="date" type="date" required value="'+today()+'"></label>' +
+    '<label class="field"><span>Σημείωση</span><input id="pay-note" name="note" placeholder="π.χ. μετρητά, IRIS"></label>' +
+    '<button class="btn good block" type="submit">Αποθήκευση πληρωμής</button></form></div>';
+}
+
+function sheetReports(){
+  const ym = reportMonth();
+  const list = S.students.slice().sort((a,b) => a.name.localeCompare(b.name,'el'));
+  return '<div class="wrap stack" style="gap:16px">' + head('Αναφορές μήνα', 'Σύνοψη για τον ' + monthAcc(ym) + ', έτοιμη για Viber') +
+    '<div class="muted" style="font-size:14px;line-height:1.5">Για κάθε μαθητή γράφεται αυτόματα τι καλύψατε, πόσες εργασίες έκανε, πώς πήγε η συγκέντρωση και αν υπάρχει υπόλοιπο. Το αλλάζεις όπως θέλεις πριν το στείλεις.</div>' +
+    (list.length ? '<div class="stack">' + list.map(s => { const n = monthStats(s, ym).done.length; return '<div class="card row">'+av(s,40)+'<div style="flex:1;min-width:0"><div style="font-weight:700">'+esc(s.name)+'</div><div class="muted" style="font-size:13px">'+n+' '+(n===1?'μάθημα':'μαθήματα')+' τον μήνα</div></div><button class="btn sm soft" data-act="report" data-id="'+s.id+'">Αναφορά</button></div>'; }).join('') + '</div>' : '<div class="empty card">Δεν έχεις ακόμη μαθητές.</div>') + '</div>';
+}
+function openSheet(kind, arg, extra){ UI.stack = UI.stack || []; if (UI.sheet) UI.stack.push(UI.sheet); UI.sheet = {kind, arg, extra}; UI.edit = false; UI.confirmDel = false; renderSheet(); const sh = $('#sheet'); sh.scrollTop = 0; }
+function closeSheet(){ UI.sheet = (UI.stack && UI.stack.length) ? UI.stack.pop() : null; UI.edit = false; UI.confirmDel = false; render(); }
+function closeAll(){ UI.sheet = null; UI.stack = []; UI.edit = false; render(); }
+function renderSheet(){
+  const sh = $('#sheet');
+  if (!UI.sheet) { sh.hidden = true; sh.innerHTML = ''; document.body.style.overflow = ''; return; }
+  const {kind, arg, extra} = UI.sheet; let html = null;
+  if (kind === 'lesson') html = sheetLesson(arg);
+  else if (kind === 'msg') html = sheetMessage(arg.text, stu(arg.sid), arg.title);
+  else if (kind === 'add-lesson') html = sheetAddLesson();
+  else if (kind === 'student') html = sheetStudent(arg);
+  else if (kind === 'student-form') html = sheetStudentForm(arg);
+  else if (kind === 'pay') html = sheetPay(arg, extra);
+  else if (kind === 'reports') html = sheetReports();
+  else if (kind === 'move') html = sheetMove(arg);
+  else if (kind === 'pause') html = sheetPause(arg);
+  else if (kind === 'test') html = sheetTest(arg);
+  if (html == null) { closeAll(); return; }
+  sh.innerHTML = html; sh.hidden = false; document.body.style.overflow = 'hidden';
+}
+
+/* ---------- actions ---------- */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, id = b.dataset.id;
+  if (b.tagName === 'A') return;
+  if (act !== 'dictate' && UI.dictating && (act === 'tab' || act === 'close')) stopDictation();
+  switch (act) {
+    case 'dictate': e.preventDefault(); dictate(b.dataset.target); break;
+    case 'tab': UI.tab = b.dataset.k; UI.confirmWipe = false; if (UI.sheet) { UI.sheet = null; UI.stack = []; } render(); window.scrollTo(0,0); break;
+    case 'tab-day': UI.tab = 'today'; UI.day = b.dataset.day; closeAll(); break;
+    case 'cal-day': UI.calSel = b.dataset.day; if (UI.calSel.slice(0,7) !== UI.calMonth) UI.calMonth = UI.calSel.slice(0,7); render(); break;
+    case 'cal-month': {
+      if (b.dataset.n === '0') { UI.calMonth = today().slice(0,7); UI.calSel = today(); }
+      else { const [yy, mm] = UI.calMonth.split('-').map(Number); const nd = new Date(yy, mm-1 + Number(b.dataset.n), 1); UI.calMonth = ymd(nd).slice(0,7); UI.calSel = UI.calMonth === today().slice(0,7) ? today() : ymd(nd); }
+      render(); break; }
+    case 'day': UI.day = b.dataset.n === '0' ? today() : addDays(UI.day, Number(b.dataset.n)); render(); break;
+    case 'open-lesson': openSheet('lesson', id); break;
+    case 'open-student': if (id) openSheet('student', id); break;
+    case 'new-student': openSheet('student-form', null); break;
+    case 'edit-student': openSheet('student-form', id); break;
+    case 'add-lesson': UI.preStudent = b.dataset.sid || ''; if (UI.tab === 'calendar') UI.day = UI.calSel; openSheet('add-lesson'); break;
+    case 'close': closeSheet(); break;
+    case 'edit-lesson': UI.edit = true; renderSheet(); break;
+    case 'undo-done': { const l = S.lessons.find(x => x.id === id); if (l) { l.status = 'scheduled'; save(); render(); toast('Το μάθημα σημειώθηκε ως μη ολοκληρωμένο'); } break; }
+    case 'cancel-lesson': { const l = S.lessons.find(x => x.id === id); if (l) { l.status = 'cancelled'; save(); closeSheet(); toast('Το μάθημα ακυρώθηκε'); } break; }
+    case 'uncancel': { const l = S.lessons.find(x => x.id === id); if (l) { l.status = 'scheduled'; save(); render(); } break; }
+    case 'delete-lesson': S.lessons = S.lessons.filter(x => x.id !== id); save(); closeSheet(); toast('Το μάθημα διαγράφηκε'); break;
+    case 'parent-msg': { const l = S.lessons.find(x => x.id === id); if (l) openSheet('msg', {text:lessonMessage(l, true), sid:l.studentId}); break; }
+    case 'remind': { const s = stu(id); if (s) openSheet('msg', {text:reminderMessage(s), sid:id, title:'Υπενθύμιση πληρωμής'}); break; }
+    case 'reports': openSheet('reports'); break;
+    case 'move-lesson': openSheet('move', id); break;
+    case 'pause': openSheet('pause', id); break;
+    case 'resume': { const s = stu(id); if (!s) break; s.pausedUntil = ''; let n = 0;
+      S.lessons.forEach(l => { if (l.studentId === id && l.pausedBy && l.status === 'cancelled' && l.date >= today()) { l.status = 'scheduled'; l.pausedBy = false; n++; } });
+      save(); render(); toast('Επανέναρξη' + (n ? ': επέστρεψαν ' + n + ' μαθήματα' : '')); break; }
+    case 'del-syl': { const s = stu(id); if (s) { s.syllabus = (s.syllabus || []).filter(x => x.id !== b.dataset.xid); save(); renderSheet(); } break; }
+    case 'add-test': openSheet('test', id); break;
+    case 'del-test': { const s = stu(id); if (s) { s.tests = (s.tests || []).filter(x => x.id !== b.dataset.tid); save(); renderSheet(); toast('Ο βαθμός διαγράφηκε'); } break; }
+    case 'report': { const s = stu(id); if (s) openSheet('msg', {text:monthReport(s, reportMonth()), sid:id, title:'Αναφορά ' + monthGen(reportMonth())}); break; }
+    case 'chart-bar': UI.chartSel = Number(b.dataset.i); render(); break;
+    case 'day-set': UI.day = b.dataset.day; render(); break;
+    case 'pay': openSheet('pay', id, b.dataset.amt != null ? Number(b.dataset.amt) : null); break;
+    case 'copy-msg': {
+      const ta = $('#msgtext'); const txt = ta ? ta.value : '';
+      const fallback = () => { if (ta) { ta.focus(); ta.select(); } toast('Επίλεξε το κείμενο και αντέγραψέ το'); };
+      try { navigator.clipboard.writeText(txt).then(() => toast('Αντιγράφηκε. Επικόλλησέ το στο Viber.'), fallback); } catch(err) { fallback(); }
+      break; }
+    case 'del-student': UI.confirmDel = true; renderSheet(); break;
+    case 'del-student-no': UI.confirmDel = false; renderSheet(); break;
+    case 'del-student-yes': S.students = S.students.filter(s => s.id !== id); S.lessons = S.lessons.filter(l => l.studentId !== id); S.payments = S.payments.filter(p => p.studentId !== id); save(); closeAll(); toast('Ο μαθητής διαγράφηκε'); break;
+    case 'owed-tab': UI.owedTab = b.dataset.k; render(); break;
+    case 'clear-demo': S = blank(); save(); UI.day = today(); render(); toast('Έτοιμο. Πρόσθεσε τον πρώτο σου μαθητή.'); break;
+    case 'load-demo': S = seed(); save(); UI.day = today(); render(); toast('Φορτώθηκαν τα παραδείγματα'); break;
+    case 'wipe': UI.confirmWipe = true; render(); break;
+    case 'wipe-cancel': UI.confirmWipe = false; render(); break;
+    case 'wipe-yes': S = blank(); save(); UI.confirmWipe = false; render(); toast('Όλα διαγράφηκαν'); break;
+    case 'backup': {
+      const txt = JSON.stringify(S);
+      try { navigator.clipboard.writeText(txt).then(() => toast('Αντιγράφηκε. Στείλ\' το στον εαυτό σου (π.χ. email).'), () => toast('Δεν επιτράπηκε η αντιγραφή σε αυτή την προβολή')); } catch(err) { toast('Δεν επιτράπηκε η αντιγραφή σε αυτή την προβολή'); }
+      break; }
+  }
+});
+document.addEventListener('change', (e) => {
+  const cb = e.target.closest('input[data-syl]'); if (!cb) return;
+  const s = stu(cb.dataset.sid); if (!s) return;
+  const x = (s.syllabus || []).find(y => y.id === cb.dataset.syl); if (!x) return;
+  x.done = cb.checked; save();
+  const sh = $('#sheet'), top = sh.scrollTop; renderSheet(); sh.scrollTop = top;
+  const f = sh.querySelector('input[data-syl="'+x.id+'"]'); if (f) f.focus({preventScroll:true});
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'al-q') {
+    const q = norm(e.target.value).trim(); let shown = 0;
+    document.querySelectorAll('.picker .opt').forEach(o => { const ok = !q || o.dataset.k.includes(q); o.hidden = !ok; if (ok) shown++; });
+    const none = $('#al-none'); if (none) none.hidden = shown > 0;
+    if (shown === 1) { const only = [...document.querySelectorAll('.picker .opt')].find(o => !o.hidden); if (only) only.querySelector('input').checked = true; }
+    return;
+  }
+  if (e.target.id === 'q') { UI.q = e.target.value; const r = $('#qres'); if (r) r.innerHTML = searchResults(); return; }
+  if (e.target.id !== 'msgtext') return;
+  const t = e.target.value, v = $('#viber-link'), s = $('#sms-link');
+  if (v) v.href = 'viber://forward?text=' + encodeURIComponent(t);
+  if (s) s.href = s.href.split('?')[0] + '?body=' + encodeURIComponent(t);
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('form[data-form]'); if (!f) return;
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(f).entries());
+  const kind = f.dataset.form, id = f.dataset.id;
+  if (kind === 'complete') {
+    const l = S.lessons.find(x => x.id === id); if (!l) return;
+    const wasDone = l.status === 'done';
+    Object.assign(l, {topic:(d.topic||'').trim(), focus:d.focus||'', hw:d.hw==='none'?'':(d.hw||''), nextHw:(d.nextHw||'').trim(), note:(d.note||'').trim(), status:'done'});
+    const s = stu(l.studentId); if (s && !wasDone) l.price = s.price;
+    save(); UI.edit = false;
+    if (wasDone) { render(); toast('Αποθηκεύτηκε'); }
+    else { UI.sheet = {kind:'msg', arg:{text:lessonMessage(l, true), sid:l.studentId}}; render(); toast('Καταγράφηκε. Στείλε ενημέρωση στον γονιό.'); }
+  }
+  if (kind === 'add-lesson') {
+    const n = Number(d.rep) || 1;
+    for (let i = 0; i < n; i++) S.lessons.push({id:uid(), studentId:d.studentId, date:addDays(d.date, i*7), time:d.time, status:'scheduled', price:(stu(d.studentId)||{}).price||0, topic:'', focus:'', hw:'', nextHw:'', note:''});
+    save(); UI.day = d.date;
+    if (UI.tab === 'calendar') { UI.calSel = d.date; UI.calMonth = d.date.slice(0,7); } else UI.tab = 'today';
+    closeAll(); toast(n === 1 ? 'Το μάθημα προστέθηκε' : 'Προστέθηκαν ' + n + ' μαθήματα');
+  }
+  if (kind === 'student') {
+    const rec = {name:(d.name||'').trim(), g:d.g||'m', subject:(d.subject||'').trim(), grade:(d.grade||'').trim(), price:Number(d.price)||0, pkg:Number(d.pkg)||0, parentName:(d.parentName||'').trim(), parentPhone:(d.parentPhone||'').trim(), address:(d.address||'').trim(), examName:(d.examName||'').trim(), examDate:d.examDate||''};
+    if (!rec.name) return;
+    if (id) { Object.assign(stu(id), rec); save(); closeSheet(); toast('Αποθηκεύτηκε'); }
+    else { const s = Object.assign({id:uid(), color:COLORS[S.students.length % COLORS.length]}, rec); S.students.push(s); S.demo = S.demo && true; save(); UI.sheet = null; UI.stack = []; UI.tab = 'students'; openSheet('student', s.id); render(); toast('Ο μαθητής προστέθηκε'); }
+  }
+  if (kind === 'move') {
+    const l = S.lessons.find(x => x.id === id); if (!l) return;
+    const s = stu(l.studentId);
+    const oldTxt = parseYmd(l.date).getDate() + '/' + (parseYmd(l.date).getMonth()+1) + ', ' + l.time;
+    l.date = d.date; l.time = d.time; save();
+    UI.day = d.date; UI.calSel = d.date; UI.calMonth = d.date.slice(0,7);
+    if (d.notify && s) {
+      const txt = 'Καλησπέρα' + (s.parentName ? ' ' + s.parentName : '') + '! Το μάθημα που είχαμε στις ' + oldTxt + ' μεταφέρεται για ' + parseYmd(d.date).toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'}) + ', ' + d.time + '. Ευχαριστώ!' + (S.teacher ? '\n\n' + S.teacher : '');
+      UI.sheet = {kind:'msg', arg:{text:txt, sid:s.id, title:'Ενημέρωση αλλαγής'}}; render();
+    } else closeSheet();
+    toast('Το μάθημα μεταφέρθηκε');
+  }
+  if (kind === 'syl') {
+    const s = stu(id); if (!s) return;
+    const titles = String(d.title || '').split('\n').map(t => t.trim()).filter(Boolean);
+    if (!titles.length) return;
+    s.syllabus = (s.syllabus || []).concat(titles.map(title => ({id:uid(), title, done:false})));
+    save(); const sh = $('#sheet'), top = sh.scrollTop; renderSheet(); sh.scrollTop = top;
+    const ni = $('#syl-new'); if (ni && titles.length === 1) ni.focus({preventScroll:true});
+    toast(titles.length === 1 ? 'Προστέθηκε' : 'Προστέθηκαν ' + titles.length + ' ενότητες');
+  }
+  if (kind === 'pause') {
+    const s = stu(id); if (!s || !d.until) return;
+    s.pausedUntil = d.until; let n = 0;
+    S.lessons.forEach(l => { if (l.studentId === id && l.status === 'scheduled' && l.date >= today() && l.date < d.until) { l.status = 'cancelled'; l.pausedBy = true; n++; } });
+    save();
+    if (d.notify) {
+      const txt = 'Καλησπέρα' + (s.parentName ? ' ' + s.parentName : '') + '! Όπως είπαμε, κάνουμε μια μικρή παύση στα μαθήματα με ' + art(s) + ' ' + acc(s.name) + '. Ξαναρχίζουμε ' + (parseYmd(d.until).getDay() === 6 ? 'το ' : 'την ') + parseYmd(d.until).toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long'}) + '. Ευχαριστώ!' + (S.teacher ? '\n\n' + S.teacher : '');
+      UI.sheet = {kind:'msg', arg:{text:txt, sid:id, title:'Ενημέρωση παύσης'}}; render();
+    } else closeSheet();
+    toast('Παύση' + (n ? ': ' + n + ' μαθήματα σε αναμονή' : ''));
+  }
+  if (kind === 'test') {
+    const s = stu(id); if (!s) return;
+    const score = Number(d.score), max = Number(d.max);
+    if (!(max > 0) || !(score >= 0)) return;
+    s.tests = s.tests || []; s.tests.push({id:uid(), date:d.date || today(), title:(d.title||'').trim(), score, max});
+    save(); closeSheet(); toast('Καταγράφηκε ' + score + '/' + max);
+  }
+  if (kind === 'pay') {
+    const amt = Number(d.amount); if (!(amt > 0)) return;
+    S.payments.push({id:uid(), studentId:id, amount:amt, date:d.date || today(), note:(d.note||'').trim()});
+    save(); closeSheet(); toast('Καταγράφηκε πληρωμή ' + money(amt));
+  }
+  if (kind === 'remind') { S.remindHours = Number(d.remindHours) || 2; save(); toast('Υπενθύμιση ' + hoursLabel(remindHours()) + ' πριν'); }
+  if (kind === 'teacher') { S.teacher = (d.teacher||'').trim(); save(); toast('Αποθηκεύτηκε'); }
+  if (kind === 'restore') {
+    try {
+      const x = JSON.parse(d.restore || '');
+      if (!x || !Array.isArray(x.students) || !Array.isArray(x.lessons) || !Array.isArray(x.payments)) throw 0;
+      S = x; save(); render(); toast('Η επαναφορά ολοκληρώθηκε');
+    } catch(err) { toast('Το κείμενο δεν είναι έγκυρο αντίγραφο. Επικόλλησέ το ολόκληρο.'); }
+  }
+});
+render();
+// Android back button (installed app): close the open screen first, then return to "Σήμερα"
+window.__idiaBack = function(){
+  if (UI.sheet) { closeSheet(); return true; }
+  if (UI.tab !== 'today') { UI.tab = 'today'; render(); window.scrollTo(0,0); return true; }
+  return false;
+};
+setInterval(() => { if (!UI.sheet && UI.tab === 'today' && !document.hidden) render(); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !UI.sheet && UI.tab === 'today') render(); });
+})();
+</script>
+
+<script>
+/* Installed Android app: hardware back button */
+(function(){
+  function hook(){ var C = window.Capacitor, App = C && C.Plugins && C.Plugins.App; if (!App) return;
+    App.addListener("backButton", function(){ if (!(window.__idiaBack && window.__idiaBack())) App.exitApp(); }); }
+  if (document.readyState === "complete") hook(); else window.addEventListener("load", hook);
+})();
+</script>
+</body>
+</html>
